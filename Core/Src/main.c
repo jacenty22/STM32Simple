@@ -23,7 +23,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "timer.h"
 #include "LCD_I2C.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,8 +97,14 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim3);
+
   LCD_I2C_Init();
-  lcd_send_string("O");
+  LCD_Clear();
+  HAL_Delay(10);
+  LCD_Set_Shifting_Time(2000);
+ // LCD_Print_MultiLines("jakis dlugi tekst, ktory niech mi sie tutaj wyswietla, bo musi sie wyswietlac !!!! \n 	THE END");
+  LCD_Print_In_Separately_Line("1. FIRST LONG LINE", 0);
+  LCD_Print_In_Separately_Line("2. SECOND LONG LINE", 1);
   /* USER CODE END 2 */
  
  
@@ -106,7 +114,7 @@ int main(void)
 
   while (1)
   {
-	  lcd_send_string("Dziala :D");
+	  LCD_Service();
 	 // HAL_Delay(1000);
 
     /* USER CODE END WHILE */
@@ -291,14 +299,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if(htim->Instance == TIM3)
   {
-	  //todo timer 10ms
-	  miliseconds+=10;
-	  if(miliseconds % 1000 == 0)
-		  seconds++;
-	  if(seconds == 60){
-		  minute++;
-		  seconds = 0;
-	  }
+	  Time_Service();
   }
 }
 
