@@ -11,6 +11,9 @@
 #include "timer.h"
 #include "string.h"
 #include "stdint.h"
+#include <stdarg.h>
+#include <stdio.h>
+#include "stdlib.h"
 
 static void lcd_send_cmd(uint8_t cmd);
 static void lcd_send_data(char data);
@@ -24,9 +27,7 @@ LCD_struct LCDService;
 
 enum displayMethod
 {
-	NONE_DISPLAY_MODE = 0x0,
-	MULTILINE_MODE = 0x01,
-	TWO_LINES_SEPARATELY_MODE = 0x02,
+	NONE_DISPLAY_MODE = 0x0, MULTILINE_MODE = 0x01, TWO_LINES_SEPARATELY_MODE = 0x02,
 
 };
 
@@ -81,6 +82,8 @@ void LCD_I2C_Init(void)
 	HAL_Delay(10);
 	lcd_send_cmd(DISPLAY_ON_OFF_CMD | DISPLAY_ON_BIT); //Display on/off control --> D = 1, C and B = 0. (Cursor and blink, last two bits)
 	HAL_Delay(10);
+	LCD_Clear();
+	HAL_Delay(100);
 }
 
 void LCD_Set_Shifting_Time(uint16_t time)
@@ -94,19 +97,34 @@ void LCD_Print_With_Position(char *str, uint8_t lineNumber, uint8_t position)
 		return;
 
 	if (lineNumber)
-		lcd_send_cmd(SET_DDRAM_ADDRESS|SECOND_LINE_ADDRESS_OFFSET|position);
+		lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET | position);
 	else
-		lcd_send_cmd(SET_DDRAM_ADDRESS|position);
+		lcd_send_cmd(SET_DDRAM_ADDRESS | position);
 	lcd_send_string(str);
 	LCDService.displayMode = NONE_DISPLAY_MODE;
+
+	memset(LCDService.firstLineString, 0, sizeof(LCDService.firstLineString));
+	memset(LCDService.secondLineString, 0, sizeof(LCDService.secondLineString));
+	free(LCDService.multilineString);
 }
-void LCD_Print_MultiLines(char *str)
+void LCD_Print_MultiLines(char *format, ...)
 {
+	va_list args;
+	uint16_t textLength = 0;
+	va_start(args, format);
+	free(LCDService.multilineString);
+	textLength = vsnprintf(NULL, 0, format, args);
+	LCDService.multilineString = (char *)malloc((textLength + 1) * sizeof(char*));
+	vsnprintf(LCDService.multilineString, textLength + 1, format, args);
+	va_end(args);
+
 	LCD_Clear();
 	LCDService.displayMode = MULTILINE_MODE;
-	LCDService.secondLineStringPtr = NULL;
-	LCDService.firstLineStringPtr = str;
+	memset(LCDService.secondLineString, 0, sizeof(LCDService.secondLineString));
+	memset(LCDService.firstLineString, 0, sizeof(LCDService.firstLineString));
 	LCDService.firstLinePrintPosition = 0;
+	LCDService.secondLinePrintPosition = 0;
+	LCDService.multilinePrintPosition = 0;
 	LCDService.previousMilisecond = Get_Sys_Time();
 	Multi_Line_Service(1);
 }
@@ -119,39 +137,56 @@ void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
 	if (LCDService.displayMode != TWO_LINES_SEPARATELY_MODE)
 	{
 		LCDService.displayMode = TWO_LINES_SEPARATELY_MODE;
-		LCDService.firstLineStringPtr = NULL;
-		LCDService.secondLineStringPtr = NULL;
+		memset(LCDService.firstLineString, 0, sizeof(LCDService.firstLineString));
+		memset(LCDService.secondLineString, 0, sizeof(LCDService.secondLineString));
 	}
 
 	Set_Blank_Line(lineNumber);
 	lcd_send_cmd(RETURN_HOME_CMD);
 	if (lineNumber == 1)
 	{
-		lcd_send_cmd(SET_DDRAM_ADDRESS|SECOND_LINE_ADDRESS_OFFSET);
+		lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
 	}
 
 	if (!lineNumber)
 	{
 		if (strlen(textToPrint) > COUNT_OF_LETTERS_IN_ONE_LINE)
 		{
-			LCDService.firstLineStringPtr = textToPrint;
+			if (strlen(textToPrint) > ONE_LINE_MAX_LENGTH)
+			{
+				memcpy(LCDService.firstLineString, textToPrint, ONE_LINE_MAX_LENGTH);
+				LCDService.firstLineString[ONE_LINE_MAX_LENGTH - 1] = '\0';
+			}
+			else
+			{
+				strcpy(LCDService.firstLineString, textToPrint);
+			}
 			LCDService.firstLinePrintPosition = 0;
 		}
 		else
 		{
-			LCDService.firstLineStringPtr = NULL;
+			memset(LCDService.firstLineString, 0, sizeof(LCDService.firstLineString));
 		}
 	}
 	else
 	{
 		if (strlen(textToPrint) > COUNT_OF_LETTERS_IN_ONE_LINE)
 		{
-			LCDService.secondLineStringPtr = textToPrint;
+			if (strlen(textToPrint) > ONE_LINE_MAX_LENGTH)
+			{
+				memcpy(LCDService.secondLineString, textToPrint, ONE_LINE_MAX_LENGTH);
+				LCDService.secondLineString[ONE_LINE_MAX_LENGTH - 1] = '\0';
+			}
+			else
+			{
+				strcpy(LCDService.secondLineString, textToPrint);
+			}
+			LCDService.firstLinePrintPosition = 0;
 			LCDService.secondLinePrintPosition = 0;
 		}
 		else
 		{
-			LCDService.secondLineStringPtr = NULL;
+			memset(LCDService.secondLineString, 0, sizeof(LCDService.secondLineString));
 		}
 	}
 
@@ -194,8 +229,8 @@ static void lcd_send_cmd(uint8_t cmd)
 	data_t[1] = data_u | DUMMY_BIT;				   //en=0, rs=0
 	data_t[2] = data_l | (DUMMY_BIT | ENABLE_BIT); //en=1, rs=0
 	data_t[3] = data_l | DUMMY_BIT;				   //en=0, rs=0
-	HAL_I2C_Master_Transmit(&hi2c1, SLAVE_ADDRESS_LCD, (uint8_t *)data_t, 4, 200);
-	if(cmd == CLEAR_DISPLAY_CMD || cmd == RETURN_HOME_CMD)
+	HAL_I2C_Master_Transmit(&hi2c1, SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
+	if (cmd == CLEAR_DISPLAY_CMD || cmd == RETURN_HOME_CMD)
 		HAL_Delay(6);
 	else
 		HAL_Delay(1);
@@ -211,7 +246,7 @@ static void lcd_send_data(char data)
 	data_t[1] = data_u | (DUMMY_BIT | RESET_BIT);			   //en=0, rs=1
 	data_t[2] = data_l | (DUMMY_BIT | ENABLE_BIT | RESET_BIT); //en=1, rs=1
 	data_t[3] = data_l | (DUMMY_BIT | RESET_BIT);			   //en=0, rs=1
-	HAL_I2C_Master_Transmit(&hi2c1, SLAVE_ADDRESS_LCD, (uint8_t *)data_t, 4, 200);
+	HAL_I2C_Master_Transmit(&hi2c1, SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
 }
 
 static void lcd_send_string(char *str)
@@ -252,34 +287,34 @@ static void Two_Lines_Separately_Service(void)
 	if (Get_Sys_Time() - LCDService.previousMilisecond >= LCDService.shiftTime)
 	{
 		LCDService.previousMilisecond = Get_Sys_Time();
-		if (LCDService.firstLineStringPtr != NULL)
+		if (LCDService.firstLineString[0] != 0)
 		{
 			LCDService.firstLinePrintPosition++;
-			if (LCDService.firstLinePrintPosition + COUNT_OF_LETTERS_IN_ONE_LINE >= strlen(LCDService.firstLineStringPtr))
+			if (LCDService.firstLinePrintPosition + COUNT_OF_LETTERS_IN_ONE_LINE > strlen(LCDService.firstLineString))
 			{
 				LCDService.firstLinePrintPosition = 0;
 			}
-			//Set_Blank_Line(0);
 			lcd_send_cmd(RETURN_HOME_CMD);
-			lcd_send_string_2(LCDService.firstLineStringPtr + LCDService.firstLinePrintPosition, COUNT_OF_LETTERS_IN_ONE_LINE);
+			lcd_send_string_2(LCDService.firstLineString + LCDService.firstLinePrintPosition,
+			COUNT_OF_LETTERS_IN_ONE_LINE);
 		}
-		if (LCDService.secondLineStringPtr != NULL)
+		if (LCDService.secondLineString[0] != 0)
 		{
 			LCDService.secondLinePrintPosition++;
-			if (LCDService.secondLinePrintPosition + COUNT_OF_LETTERS_IN_ONE_LINE >= strlen(LCDService.secondLineStringPtr))
+			if (LCDService.secondLinePrintPosition + COUNT_OF_LETTERS_IN_ONE_LINE > strlen(LCDService.secondLineString))
 			{
 				LCDService.secondLinePrintPosition = 0;
 			}
-			//Set_Blank_Line(1);
 			lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
-			lcd_send_string_2(LCDService.secondLineStringPtr + LCDService.secondLinePrintPosition, COUNT_OF_LETTERS_IN_ONE_LINE);
+			lcd_send_string_2(LCDService.secondLineString + LCDService.secondLinePrintPosition,
+			COUNT_OF_LETTERS_IN_ONE_LINE);
 		}
 	}
 }
 static void Multi_Line_Service(uint8_t ignoreTime)
 {
 	uint8_t secondLine = 0, charCounter = 0;
-	if (LCDService.shiftTime == 0 || LCDService.firstLineStringPtr == NULL)
+	if (LCDService.shiftTime == 0 || LCDService.multilineString == NULL)
 	{
 		return;
 	}
@@ -287,16 +322,16 @@ static void Multi_Line_Service(uint8_t ignoreTime)
 	{
 		LCDService.previousMilisecond = Get_Sys_Time();
 		LCD_Clear();
-		for (uint8_t i = LCDService.firstLinePrintPosition; i < strlen(LCDService.firstLineStringPtr); i++)
+		for (uint8_t i = LCDService.multilinePrintPosition; i < strlen(LCDService.multilineString); i++)
 		{
 			if (!secondLine) //zapisujemy pozycję, od której zaczniemy drukowanie po upływie czasu wypisania kolejnej linii
 			{
-				LCDService.firstLinePrintPosition = i + 1;
+				LCDService.multilinePrintPosition = i + 1;
 			}
-			if (LCDService.firstLineStringPtr[i] == '\n')
+			if (LCDService.multilineString[i] == '\n')
 			{
 				charCounter = 0;
-				if(!secondLine)
+				if (!secondLine)
 					lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
 				secondLine++;
 				continue;
@@ -304,19 +339,18 @@ static void Multi_Line_Service(uint8_t ignoreTime)
 			else if (charCounter == COUNT_OF_LETTERS_IN_ONE_LINE)
 			{
 				charCounter = 0;
-				if(!secondLine)
+				if (!secondLine)
 					lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
 				secondLine++;
-				continue;
 			}
 			if (secondLine >= 2)
 				break;
-			lcd_send_data(LCDService.firstLineStringPtr[i]);
+			lcd_send_data(LCDService.multilineString[i]);
 			charCounter++;
 		}
-		if (LCDService.firstLinePrintPosition + charCounter >= strlen(LCDService.firstLineStringPtr))
+		if (LCDService.multilinePrintPosition + charCounter >= strlen(LCDService.multilineString))
 		{
-			LCDService.firstLinePrintPosition = 0;
+			LCDService.multilinePrintPosition = 0;
 		}
 	}
 }
