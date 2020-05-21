@@ -40,8 +40,8 @@ FirstProject.bin \
 all: FirstProject.elf secondary-outputs
 
 # Tool invocations
-FirstProject.elf: $(OBJS) $(USER_OBJS) C:\Users\Jacek\STM32CubeIDE\workspace_1.1.0\FirstProject\STM32F411RETX_FLASH.ld
-	arm-none-eabi-gcc -o "FirstProject.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Jacek\STM32CubeIDE\workspace_1.1.0\FirstProject\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="FirstProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+FirstProject.elf: $(OBJS) $(USER_OBJS) D:\Github\STM32Simple\STM32F411RETX_FLASH.ld
+	arm-none-eabi-gcc -o "FirstProject.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Github\STM32Simple\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="FirstProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

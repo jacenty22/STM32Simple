@@ -33,15 +33,10 @@ enum displayMethod
 
 enum LCDCommands
 {
-	CLEAR_DISPLAY_CMD = 0x01,
-	INIT_CMD = 0x30,
-	FUNCTION_SET_CMD = 0x20,
-	DISPLAY_ON_OFF_CMD = 0x08,
-	ENTRY_MODE_CMD = 0x04,
-	RETURN_HOME_CMD = 0x02,
-	SHIFT_CMD = 0x10,
-	SET_DDRAM_ADDRESS = 0x80,
+	CLEAR_DISPLAY_CMD = 0x01, INIT_CMD = 0x30, FUNCTION_SET_CMD = 0x20, DISPLAY_ON_OFF_CMD = 0x08, ENTRY_MODE_CMD = 0x04, RETURN_HOME_CMD = 0x02, SHIFT_CMD = 0x10, SET_DDRAM_ADDRESS = 0x80,
 };
+#define REINIT_TIME_IN_MILIS 5000
+#define COMMUNICATION_OK_STATUS HAL_OK
 
 #define SLAVE_ADDRESS_LCD 0x7E
 #define COUNT_OF_LETTERS_IN_ONE_LINE 16
@@ -93,7 +88,7 @@ void LCD_Set_Shifting_Time(uint16_t time)
 
 void LCD_Print_With_Position(char *str, uint8_t lineNumber, uint8_t position)
 {
-	if (lineNumber >= COUNT_OF_LINES || position >= COUNT_OF_LETTERS_IN_ONE_LINE)
+	if (lineNumber >= COUNT_OF_LINES || position >= COUNT_OF_LETTERS_IN_ONE_LINE || LCDService.communicationStatus != COMMUNICATION_OK_STATUS)
 		return;
 
 	if (lineNumber)
@@ -109,12 +104,14 @@ void LCD_Print_With_Position(char *str, uint8_t lineNumber, uint8_t position)
 }
 void LCD_Print_MultiLines(char *format, ...)
 {
+	if (LCDService.communicationStatus != COMMUNICATION_OK_STATUS)
+		return;
 	va_list args;
 	uint16_t textLength = 0;
 	va_start(args, format);
 	free(LCDService.multilineString);
 	textLength = vsnprintf(NULL, 0, format, args);
-	LCDService.multilineString = (char *)malloc((textLength + 1) * sizeof(char*));
+	LCDService.multilineString = (char*) malloc((textLength + 1) * sizeof(char*));
 	vsnprintf(LCDService.multilineString, textLength + 1, format, args);
 	va_end(args);
 
@@ -131,7 +128,7 @@ void LCD_Print_MultiLines(char *format, ...)
 
 void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
 {
-	if (lineNumber >= COUNT_OF_LINES)
+	if (lineNumber >= COUNT_OF_LINES || LCDService.communicationStatus != COMMUNICATION_OK_STATUS)
 		return;
 
 	if (LCDService.displayMode != TWO_LINES_SEPARATELY_MODE)
@@ -154,7 +151,8 @@ void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
 		{
 			if (strlen(textToPrint) > ONE_LINE_MAX_LENGTH)
 			{
-				memcpy(LCDService.firstLineString, textToPrint, ONE_LINE_MAX_LENGTH);
+				memcpy(LCDService.firstLineString, textToPrint,
+				ONE_LINE_MAX_LENGTH);
 				LCDService.firstLineString[ONE_LINE_MAX_LENGTH - 1] = '\0';
 			}
 			else
@@ -174,7 +172,8 @@ void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
 		{
 			if (strlen(textToPrint) > ONE_LINE_MAX_LENGTH)
 			{
-				memcpy(LCDService.secondLineString, textToPrint, ONE_LINE_MAX_LENGTH);
+				memcpy(LCDService.secondLineString, textToPrint,
+				ONE_LINE_MAX_LENGTH);
 				LCDService.secondLineString[ONE_LINE_MAX_LENGTH - 1] = '\0';
 			}
 			else
@@ -204,11 +203,45 @@ void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
 
 void LCD_Clear(void)
 {
-	lcd_send_cmd(CLEAR_DISPLAY_CMD);
+	if (LCDService.communicationStatus == COMMUNICATION_OK_STATUS)
+		lcd_send_cmd(CLEAR_DISPLAY_CMD);
 }
 
 void LCD_Service(void)
 {
+	uint8_t static communicationErrorWasActive = 0;
+	if (LCDService.communicationStatus != COMMUNICATION_OK_STATUS)
+	{
+		if (LCDService.displayMode != NONE_DISPLAY_MODE)
+		{
+			LCDService.firstLinePrintPosition = 0;
+			LCDService.secondLinePrintPosition = 0;
+			LCDService.multilinePrintPosition = 0;
+			LCDService.displayMode = NONE_DISPLAY_MODE;
+			memset(LCDService.firstLineString, 0, sizeof(LCDService.firstLineString));
+			memset(LCDService.secondLineString, 0, sizeof(LCDService.secondLineString));
+			free(LCDService.multilineString);
+		}
+		if (Get_Sys_Time() - LCDService.previousMilisecond > REINIT_TIME_IN_MILIS)
+		{
+			LCDService.previousMilisecond = Get_Sys_Time();
+			HAL_I2C_DeInit(&hi2c1);
+			HAL_Delay(100);
+			HAL_I2C_Init(&hi2c1);
+			LCD_I2C_Init();
+		}
+		communicationErrorWasActive = 1;
+		return;
+	}
+	else if (communicationErrorWasActive)
+	{
+		communicationErrorWasActive = 0;
+		HAL_I2C_DeInit(&hi2c1);
+		HAL_Delay(100);
+		HAL_I2C_Init(&hi2c1);
+		LCD_I2C_Init();
+		return;
+	}
 	if (LCDService.displayMode == TWO_LINES_SEPARATELY_MODE)
 	{
 		Two_Lines_Separately_Service();
@@ -229,7 +262,8 @@ static void lcd_send_cmd(uint8_t cmd)
 	data_t[1] = data_u | DUMMY_BIT;				   //en=0, rs=0
 	data_t[2] = data_l | (DUMMY_BIT | ENABLE_BIT); //en=1, rs=0
 	data_t[3] = data_l | DUMMY_BIT;				   //en=0, rs=0
-	HAL_I2C_Master_Transmit(&hi2c1, SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
+	LCDService.communicationStatus = HAL_I2C_Master_Transmit(&hi2c1,
+	SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
 	if (cmd == CLEAR_DISPLAY_CMD || cmd == RETURN_HOME_CMD)
 		HAL_Delay(6);
 	else
@@ -246,7 +280,8 @@ static void lcd_send_data(char data)
 	data_t[1] = data_u | (DUMMY_BIT | RESET_BIT);			   //en=0, rs=1
 	data_t[2] = data_l | (DUMMY_BIT | ENABLE_BIT | RESET_BIT); //en=1, rs=1
 	data_t[3] = data_l | (DUMMY_BIT | RESET_BIT);			   //en=0, rs=1
-	HAL_I2C_Master_Transmit(&hi2c1, SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
+	LCDService.communicationStatus = HAL_I2C_Master_Transmit(&hi2c1,
+	SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
 }
 
 static void lcd_send_string(char *str)

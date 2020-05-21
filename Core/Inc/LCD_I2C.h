@@ -11,12 +11,13 @@
 
 typedef struct LCD_struct
 {
-	uint8_t firstLinePrintPosition;
-	uint8_t secondLinePrintPosition;
-	uint8_t multilinePrintPosition;
+	uint8_t communicationStatus;
 	uint16_t shiftTime;
 	uint8_t displayMode;
 	uint32_t previousMilisecond;
+	uint8_t firstLinePrintPosition;
+	uint8_t secondLinePrintPosition;
+	uint8_t multilinePrintPosition;
 	char firstLineString[ONE_LINE_MAX_LENGTH];
 	char secondLineString[ONE_LINE_MAX_LENGTH];
 	char *multilineString;
