@@ -33,7 +33,15 @@ enum displayMethod
 
 enum LCDCommands
 {
-	CLEAR_DISPLAY_CMD = 0x01, INIT_CMD = 0x30, FUNCTION_SET_CMD = 0x20, DISPLAY_ON_OFF_CMD = 0x08, ENTRY_MODE_CMD = 0x04, RETURN_HOME_CMD = 0x02, SHIFT_CMD = 0x10, SET_DDRAM_ADDRESS = 0x80,
+	CLEAR_DISPLAY_CMD = 0x01,
+	INIT_CMD = 0x30,
+	FUNCTION_SET_CMD = 0x20,
+	DISPLAY_ON_OFF_CMD = 0x08,
+	ENTRY_MODE_CMD = 0x04,
+	RETURN_HOME_CMD = 0x02,
+	SHIFT_CMD = 0x10,
+	SET_DDRAM_ADDRESS = 0x80,
+	SET_CGRAM_ADDRESS = 0x40,
 };
 #define REINIT_TIME_IN_MILIS 5000
 #define COMMUNICATION_OK_STATUS HAL_OK
@@ -53,7 +61,31 @@ enum LCDCommands
 #define SHIFT_CURSOT_TO_THE_RIGTH 0x04
 
 #define SECOND_LINE_ADDRESS_OFFSET 0x40
+#define MAX_COUNT_OF_CHARACTERS_IN_GCRAM 8
+const char ownCharacters[9][8] =	//8 znaków po 8 bajtów na każdy; w komentarzu zapis ósemkowy
+		{
+		{ 0x0, 0x0, 0x0E, 0x01, 0x0F, 0x11, 0x0F, 0x04 },			//ą	//\245,
+				{ 0x2, 0x04, 0x0E, 0x10, 0x10, 0x11, 0x0E, 0x0 },	//ć	//\206,
+				{ 0x0, 0x00, 0x0E, 0x11, 0x1F, 0x10, 0x0E, 0x01 },	//ę	//\251,
+				{ 0x0C, 0x04, 0x06, 0x04, 0x0C, 0x04, 0x0C, 0x0 },	//ł	//\210,
+				{ 0x02, 0x04, 0x16, 0x19, 0x11, 0x11, 0x11, 0x0 },	//ń	//\344
+				{ 0x02, 0x04, 0x0E, 0x11, 0x11, 0x11, 0x0E, 0x0 },	//ó	//\242
+				{ 0x2, 0x04, 0x0E, 0x10, 0x0E, 0x01, 0x1E, 0x0 },	//ś	//\230
+				{ 0x02, 0x04, 0x1F, 0x02, 0x04, 0x08, 0x1F, 0x0 },	//ź	//\253
+				{ 0x04, 0x00, 0x1F, 0x02, 0x04, 0x08, 0x1F, 0x0 },	//ż	//\276
+		};
 
+static void Set_Own_Characters(void)
+{
+	lcd_send_cmd(SET_CGRAM_ADDRESS);
+	for (uint8_t j = 0; j < sizeof(ownCharacters) / sizeof(ownCharacters[0]) && j < MAX_COUNT_OF_CHARACTERS_IN_GCRAM; j++)
+	{
+		for (uint8_t i = 0; i < sizeof(ownCharacters[0]) / sizeof(ownCharacters[0][0]); i++)
+		{
+			lcd_send_data(ownCharacters[j][i]);
+		}
+	}
+}
 void LCD_I2C_Init(void)
 {
 	// 4 bit initialisation
@@ -79,6 +111,7 @@ void LCD_I2C_Init(void)
 	HAL_Delay(10);
 	LCD_Clear();
 	HAL_Delay(100);
+	Set_Own_Characters();
 }
 
 void LCD_Set_Shifting_Time(uint16_t time)
@@ -286,8 +319,53 @@ static void lcd_send_data(char data)
 
 static void lcd_send_string(char *str)
 {
-	while (*str)
-		lcd_send_data(*str++);
+	uint8_t index = 0;
+	while (str[index])
+	{
+		switch (str[index])
+		{
+		case '\245':
+			//Set_Own_Character(0);
+			lcd_send_data(0x0);
+			break;
+		case '\206':
+			//Set_Own_Character(1);
+			lcd_send_data(0x01);
+			break;
+		case '\251':
+			//Set_Own_Character(2);
+			lcd_send_data(0x02);
+			break;
+		case '\210':
+			//Set_Own_Character(3);
+			lcd_send_data(0x03);
+			break;
+		case '\344':
+			//Set_Own_Character(4);
+			lcd_send_data(0x04);
+			break;
+		case '\242':
+			//Set_Own_Character(5);
+			lcd_send_data(0x05);
+			break;
+		case '\230':
+			//Set_Own_Character(6);
+			lcd_send_data(0x06);
+			break;
+		case '\253':
+			//Set_Own_Character(7);
+			lcd_send_data(0x07);
+			break;
+		case '\276':
+			//Set_Own_Character(8);
+			lcd_send_data(0x07);
+			break;
+		default:
+			lcd_send_data(str[index]);
+			break;
+		}
+		index++;
+	}
 }
 
 static void lcd_send_string_2(char *str, uint8_t countOfChars)

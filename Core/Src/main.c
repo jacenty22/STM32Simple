@@ -102,9 +102,11 @@ int main(void)
 	HAL_ADC_Start_IT(&hadc1);
 	LCD_I2C_Init();
 	LCD_Set_Shifting_Time(2000);
-	LCD_Print_MultiLines("jakis dlugi %d, ktory niech mi sie tutaj wyswietla, bo musi", 3);
-	//LCD_Print_In_Separately_Line("1. FIRST LONG LINE", 0);
-	//LCD_Print_In_Separately_Line("2. SECOND LONG LINE", 1);
+	//LCD_Print_MultiLines("jakis dlugi %d, ktory niech mi sie tutaj wyswietla, bo musi", 3);
+	LCD_Print_In_Separately_Line("abcl\245\206\251\210\344\242\230\253\276", 0);
+	LCD_Print_In_Separately_Line("\245bry", 1);
+	//char a[]="\245ąń\344";
+	//LCD_Print_With_Position(a, 0, 0);
   /* USER CODE END 2 */
  
  
@@ -113,7 +115,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	uint32_t value = 0;
 	while (1)
-	{
+	{/*
 		if (value != Get_Sys_Seconds())
 		{
 			value = Get_Sys_Seconds();
@@ -127,7 +129,7 @@ int main(void)
 			{
 				LCD_Print_With_Position("ERROR", 0, 0);
 			}
-		}
+		}*/
 		// HAL_Delay(1000);
 
     /* USER CODE END WHILE */
