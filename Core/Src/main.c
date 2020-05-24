@@ -16,6 +16,17 @@
  *
  ******************************************************************************
  */
+/*PINS AND TIMERS CONFIGURATION
+ *
+ * TIM1 - uzywany do obliczenia opóxnienia 1 us
+ * TIM3 - timer dla systemowego czasu (przerwanie 10 ms)
+ * PC13 - niebieski, wbudowany przycisk
+ * PC1 (A4) - wejście analogowe dla LM35
+ * PA5 (6) - wyjście dla wbudowanej diody
+ * PB9 (SDA) - SDA dla LCD 1602
+ * PB8 (SCL) - SCL dla LCD 1602
+ *
+ * */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -24,7 +35,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "timer.h"
-#include "LCD_I2C.h"
+#include "main_loop.h"
 #include "temperature.h"
 /* USER CODE END Includes */
 
@@ -44,9 +55,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-
 I2C_HandleTypeDef hi2c1;
-
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim3;
 
@@ -67,12 +76,7 @@ static void MX_TIM1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void delay_us(const uint16_t us_time)
-{
-	__HAL_TIM_SET_COUNTER(&htim1, 0);
-	while (__HAL_TIM_GET_COUNTER(&htim1) < us_time)
-		;
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -105,66 +109,11 @@ int main(void)
 	MX_ADC1_Init();
 	MX_TIM1_Init();
 	/* USER CODE BEGIN 2 */
-	HAL_TIM_Base_Start_IT(&htim3);
-	HAL_TIM_Base_Start_IT(&htim1);
-	HAL_ADC_Start_IT(&hadc1);
-	LCD_I2C_Init();
-	LCD_Set_Shifting_Time(2000);
-	LCD_Print_MultiLines("jakis dlugi %d, ktory niech mi sie tutaj wyswietla, bo musi", 3);
-	//LCD_Print_In_Separately_Line("abcl\245\206\251\210\344\242\230\253\276", 0);
-	//LCD_Print_In_Separately_Line("\245bry", 1);
-
-	//char a[]="\245ąń\344";
-	//LCD_Print_With_Position(a, 0, 0);
 	/* USER CODE END 2 */
-
 	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
-	uint32_t value = 0;
-	while (1)
-	{
-		value++;
-		LCD_Print_MultiLines("temp = %d - %d", (int) value, Get_Sys_Seconds());
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		delay_us(50000);
-		/*
-		 if (value != Get_Sys_Seconds())
-		 {
-		 value = Get_Sys_Seconds();
-		 LCD_Service();
-		 float temp = 0;
-		 if (Get_Current_Temperature(&temp))
-		 {
-		 LCD_Print_MultiLines("temp = %d.%d", (int)temp, (int)(temp * 100) % 100);
-		 }
-		 else
-		 {
-		 LCD_Print_With_Position("ERROR", 0, 0);
-		 }
-		 }*/
-		// HAL_Delay(1000);
-		/* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
-	}
+	/* USER CODE BEGIN WHILE */
+	Main_Function();
 	/* USER CODE END 3 */
 }
 

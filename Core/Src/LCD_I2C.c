@@ -15,10 +15,11 @@
 #include <stdio.h>
 #include "stdlib.h"
 
-static void lcd_send_cmd(uint8_t cmd);
-static void lcd_send_data(char data);
-static void lcd_send_string(char *str);
-static void lcd_send_string_2(char *str, uint8_t countOfChars);
+static void Communication_Init(void);
+static void LCD_Send_Cmd(uint8_t cmd);
+static void LCD_Send_Data(char data);
+static void LCD_Send_String(char *str);
+static void LCD_Send_String_2(char *str, uint8_t countOfChars);
 static void Set_Blank_Line(uint8_t lineNumber);
 static void Two_Lines_Separately_Service(void);
 static void Multi_Line_Service(uint8_t ignoreTime);
@@ -77,41 +78,49 @@ const char ownCharacters[9][8] =	//8 znaków po 8 bajtów na każdy; w komentarz
 
 static void Set_Own_Characters(void)
 {
-	lcd_send_cmd(SET_CGRAM_ADDRESS);
+	LCD_Send_Cmd(SET_CGRAM_ADDRESS);
 	for (uint8_t j = 0; j < sizeof(ownCharacters) / sizeof(ownCharacters[0]) && j < MAX_COUNT_OF_CHARACTERS_IN_GCRAM; j++)
 	{
 		for (uint8_t i = 0; i < sizeof(ownCharacters[0]) / sizeof(ownCharacters[0][0]); i++)
 		{
-			lcd_send_data(ownCharacters[j][i]);
+			LCD_Send_Data(ownCharacters[j][i]);
 		}
 	}
 }
-void LCD_I2C_Init(void)
+static void Communication_Init(void)
 {
 	// 4 bit initialisation
-	HAL_Delay(100); // wait for >40ms
-	lcd_send_cmd(INIT_CMD);
-	HAL_Delay(10); // wait for >4.1ms
-	lcd_send_cmd(INIT_CMD);
-	HAL_Delay(1); // wait for >100us
-	lcd_send_cmd(INIT_CMD);
-	HAL_Delay(50);
-	lcd_send_cmd(FUNCTION_SET_CMD); // 4bit mode
-	HAL_Delay(50);
+	LCDService.Delay(100);	// wait for >40ms
+	LCD_Send_Cmd(INIT_CMD);
+	LCDService.Delay(10);	// wait for >4.1ms
+	LCD_Send_Cmd(INIT_CMD);
+	LCDService.Delay(1);	// wait for >100us
+	LCD_Send_Cmd(INIT_CMD);
+	LCDService.Delay(50);
+	LCD_Send_Cmd(FUNCTION_SET_CMD);	// 4bit mode
+	LCDService.Delay(50);
 
-	lcd_send_cmd(FUNCTION_SET_CMD | TWO_LINE_DISPLAY_MODE); // Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
-	HAL_Delay(10);
-	lcd_send_cmd(DISPLAY_ON_OFF_CMD); //Display on/off control --> D=0,C=0, B=0  ---> display off
-	HAL_Delay(10);
-	lcd_send_cmd(CLEAR_DISPLAY_CMD); // clear display
-	HAL_Delay(10);
-	lcd_send_cmd(ENTRY_MODE_CMD | INCREMENT_DDRAM_ADDRESS); //Entry mode set --> I/D = 1 (increment cursor) & S = 0 (no shift)
-	HAL_Delay(10);
-	lcd_send_cmd(DISPLAY_ON_OFF_CMD | DISPLAY_ON_BIT); //Display on/off control --> D = 1, C and B = 0. (Cursor and blink, last two bits)
-	HAL_Delay(10);
+	LCD_Send_Cmd(FUNCTION_SET_CMD | TWO_LINE_DISPLAY_MODE);	// Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
+	LCDService.Delay(10);
+	LCD_Send_Cmd(DISPLAY_ON_OFF_CMD);	//Display on/off control --> D=0,C=0, B=0  ---> display off
+	LCDService.Delay(10);
+	LCD_Send_Cmd(CLEAR_DISPLAY_CMD);	// clear display
+	LCDService.Delay(10);
+	LCD_Send_Cmd(ENTRY_MODE_CMD | INCREMENT_DDRAM_ADDRESS);	//Entry mode set --> I/D = 1 (increment cursor) & S = 0 (no shift)
+	LCDService.Delay(10);
+	LCD_Send_Cmd(DISPLAY_ON_OFF_CMD | DISPLAY_ON_BIT);	//Display on/off control --> D = 1, C and B = 0. (Cursor and blink, last two bits)
+	LCDService.Delay(10);
 	LCD_Clear();
-	HAL_Delay(100);
+	LCDService.Delay(100);
 	Set_Own_Characters();
+}
+void LCD_I2C_Init(uint8_t (*Transmit_For_LCD)(uint16_t deviceAddress, uint8_t *data, size_t dataSize, uint32_t timeout),
+		void (*Delay)(uint32_t delay), void (*I2C_For_LCD_Reinit)(void))
+{
+	LCDService.Delay = Delay;
+	LCDService.Transmit_For_LCD = Transmit_For_LCD;
+	LCDService.I2C_For_LCD_Reinit = I2C_For_LCD_Reinit;
+	Communication_Init();
 }
 
 void LCD_Set_Shifting_Time(uint16_t time)
@@ -125,10 +134,10 @@ void LCD_Print_With_Position(char *str, uint8_t lineNumber, uint8_t position)
 		return;
 
 	if (lineNumber)
-		lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET | position);
+		LCD_Send_Cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET | position);
 	else
-		lcd_send_cmd(SET_DDRAM_ADDRESS | position);
-	lcd_send_string(str);
+		LCD_Send_Cmd(SET_DDRAM_ADDRESS | position);
+	LCD_Send_String(str);
 	LCDService.displayMode = NONE_DISPLAY_MODE;
 
 	memset(LCDService.firstLineString, 0, sizeof(LCDService.firstLineString));
@@ -172,10 +181,10 @@ void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
 	}
 
 	Set_Blank_Line(lineNumber);
-	lcd_send_cmd(RETURN_HOME_CMD);
+	LCD_Send_Cmd(RETURN_HOME_CMD);
 	if (lineNumber == 1)
 	{
-		lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
+		LCD_Send_Cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
 	}
 
 	if (!lineNumber)
@@ -224,11 +233,11 @@ void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
 
 	if (strlen(textToPrint) >= COUNT_OF_LETTERS_IN_ONE_LINE)
 	{
-		lcd_send_string_2(textToPrint, COUNT_OF_LETTERS_IN_ONE_LINE);
+		LCD_Send_String_2(textToPrint, COUNT_OF_LETTERS_IN_ONE_LINE);
 	}
 	else
 	{
-		lcd_send_string(textToPrint);
+		LCD_Send_String(textToPrint);
 	}
 
 	LCDService.previousMilisecond = Get_Sys_Time();
@@ -237,7 +246,7 @@ void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
 void LCD_Clear(void)
 {
 	if (LCDService.communicationStatus == COMMUNICATION_OK_STATUS)
-		lcd_send_cmd(CLEAR_DISPLAY_CMD);
+		LCD_Send_Cmd(CLEAR_DISPLAY_CMD);
 }
 
 void LCD_Service(void)
@@ -258,10 +267,8 @@ void LCD_Service(void)
 		if (Get_Sys_Time() - LCDService.previousMilisecond > REINIT_TIME_IN_MILIS)
 		{
 			LCDService.previousMilisecond = Get_Sys_Time();
-			HAL_I2C_DeInit(&hi2c1);
-			HAL_Delay(100);
-			HAL_I2C_Init(&hi2c1);
-			LCD_I2C_Init();
+			LCDService.I2C_For_LCD_Reinit();
+			Communication_Init();
 		}
 		communicationErrorWasActive = 1;
 		return;
@@ -269,10 +276,8 @@ void LCD_Service(void)
 	else if (communicationErrorWasActive)
 	{
 		communicationErrorWasActive = 0;
-		HAL_I2C_DeInit(&hi2c1);
-		HAL_Delay(100);
-		HAL_I2C_Init(&hi2c1);
-		LCD_I2C_Init();
+		LCDService.I2C_For_LCD_Reinit();
+		Communication_Init();
 		return;
 	}
 	if (LCDService.displayMode == TWO_LINES_SEPARATELY_MODE)
@@ -285,7 +290,7 @@ void LCD_Service(void)
 	}
 }
 
-static void lcd_send_cmd(uint8_t cmd)
+static void LCD_Send_Cmd(uint8_t cmd)
 {
 	char data_u, data_l;
 	uint8_t data_t[4];
@@ -295,15 +300,14 @@ static void lcd_send_cmd(uint8_t cmd)
 	data_t[1] = data_u | DUMMY_BIT;				   //en=0, rs=0
 	data_t[2] = data_l | (DUMMY_BIT | ENABLE_BIT); //en=1, rs=0
 	data_t[3] = data_l | DUMMY_BIT;				   //en=0, rs=0
-	LCDService.communicationStatus = HAL_I2C_Master_Transmit(&hi2c1,
-	SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
+	LCDService.communicationStatus = LCDService.Transmit_For_LCD( SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
 	if (cmd == CLEAR_DISPLAY_CMD || cmd == RETURN_HOME_CMD)
-		HAL_Delay(6);
+		LCDService.Delay(6);
 	else
-		HAL_Delay(1);
+		LCDService.Delay(1);
 }
 
-static void lcd_send_data(char data)
+static void LCD_Send_Data(char data)
 {
 	char data_u, data_l;
 	uint8_t data_t[4];
@@ -313,11 +317,10 @@ static void lcd_send_data(char data)
 	data_t[1] = data_u | (DUMMY_BIT | RESET_BIT);			   //en=0, rs=1
 	data_t[2] = data_l | (DUMMY_BIT | ENABLE_BIT | RESET_BIT); //en=1, rs=1
 	data_t[3] = data_l | (DUMMY_BIT | RESET_BIT);			   //en=0, rs=1
-	LCDService.communicationStatus = HAL_I2C_Master_Transmit(&hi2c1,
-	SLAVE_ADDRESS_LCD, (uint8_t*) data_t, 4, 200);
+	LCDService.communicationStatus = LCDService.Transmit_For_LCD(SLAVE_ADDRESS_LCD, (uint8_t*) data_t, sizeof(data_t), 200);
 }
 
-static void lcd_send_string(char *str)
+static void LCD_Send_String(char *str)
 {
 	uint8_t index = 0;
 	while (str[index])
@@ -325,54 +328,45 @@ static void lcd_send_string(char *str)
 		switch (str[index])
 		{
 		case '\245':
-			//Set_Own_Character(0);
-			lcd_send_data(0x0);
+			LCD_Send_Data(0x0);
 			break;
 		case '\206':
-			//Set_Own_Character(1);
-			lcd_send_data(0x01);
+			LCD_Send_Data(0x01);
 			break;
 		case '\251':
-			//Set_Own_Character(2);
-			lcd_send_data(0x02);
+			LCD_Send_Data(0x02);
 			break;
 		case '\210':
-			//Set_Own_Character(3);
-			lcd_send_data(0x03);
+			LCD_Send_Data(0x03);
 			break;
 		case '\344':
-			//Set_Own_Character(4);
-			lcd_send_data(0x04);
+			LCD_Send_Data(0x04);
 			break;
 		case '\242':
-			//Set_Own_Character(5);
-			lcd_send_data(0x05);
+			LCD_Send_Data(0x05);
 			break;
 		case '\230':
-			//Set_Own_Character(6);
-			lcd_send_data(0x06);
+			LCD_Send_Data(0x06);
 			break;
 		case '\253':
-			//Set_Own_Character(7);
-			lcd_send_data(0x07);
+			LCD_Send_Data(0x07);
 			break;
 		case '\276':
-			//Set_Own_Character(8);
-			lcd_send_data(0x07);
+			LCD_Send_Data(0x07);
 			break;
 		default:
-			lcd_send_data(str[index]);
+			LCD_Send_Data(str[index]);
 			break;
 		}
 		index++;
 	}
 }
 
-static void lcd_send_string_2(char *str, uint8_t countOfChars)
+static void LCD_Send_String_2(char *str, uint8_t countOfChars)
 {
 	while (countOfChars)
 	{
-		lcd_send_data(*str++);
+		LCD_Send_Data(*str++);
 		countOfChars--;
 	}
 }
@@ -381,15 +375,15 @@ static void Set_Blank_Line(uint8_t lineNumber)
 {
 	if (lineNumber == 1)
 	{
-		lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
+		LCD_Send_Cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
 	}
 	else
 	{
-		lcd_send_cmd(RETURN_HOME_CMD);
+		LCD_Send_Cmd(RETURN_HOME_CMD);
 	}
 	for (uint8_t i = 0; i < COUNT_OF_LETTERS_IN_ONE_LINE; i++)
 	{
-		lcd_send_string(" ");
+		LCD_Send_String(" ");
 	}
 }
 
@@ -407,8 +401,8 @@ static void Two_Lines_Separately_Service(void)
 			{
 				LCDService.firstLinePrintPosition = 0;
 			}
-			lcd_send_cmd(RETURN_HOME_CMD);
-			lcd_send_string_2(LCDService.firstLineString + LCDService.firstLinePrintPosition,
+			LCD_Send_Cmd(RETURN_HOME_CMD);
+			LCD_Send_String_2(LCDService.firstLineString + LCDService.firstLinePrintPosition,
 			COUNT_OF_LETTERS_IN_ONE_LINE);
 		}
 		if (LCDService.secondLineString[0] != 0)
@@ -418,8 +412,8 @@ static void Two_Lines_Separately_Service(void)
 			{
 				LCDService.secondLinePrintPosition = 0;
 			}
-			lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
-			lcd_send_string_2(LCDService.secondLineString + LCDService.secondLinePrintPosition,
+			LCD_Send_Cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
+			LCD_Send_String_2(LCDService.secondLineString + LCDService.secondLinePrintPosition,
 			COUNT_OF_LETTERS_IN_ONE_LINE);
 		}
 	}
@@ -445,7 +439,7 @@ static void Multi_Line_Service(uint8_t ignoreTime)
 			{
 				charCounter = 0;
 				if (!secondLine)
-					lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
+					LCD_Send_Cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
 				secondLine++;
 				continue;
 			}
@@ -453,12 +447,12 @@ static void Multi_Line_Service(uint8_t ignoreTime)
 			{
 				charCounter = 0;
 				if (!secondLine)
-					lcd_send_cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
+					LCD_Send_Cmd(SET_DDRAM_ADDRESS | SECOND_LINE_ADDRESS_OFFSET);
 				secondLine++;
 			}
 			if (secondLine >= 2)
 				break;
-			lcd_send_data(LCDService.multilineString[i]);
+			LCD_Send_Data(LCDService.multilineString[i]);
 			charCounter++;
 		}
 		if (LCDService.multilinePrintPosition + charCounter >= strlen(LCDService.multilineString))
