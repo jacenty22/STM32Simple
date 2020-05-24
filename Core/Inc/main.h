@@ -59,9 +59,15 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define BlueButton_Pin GPIO_PIN_13
-#define BlueButton_GPIO_Port GPIOC
-#define BlueButton_EXTI_IRQn EXTI15_10_IRQn
+#define BLUE_BUTTON_Pin GPIO_PIN_13
+#define BLUE_BUTTON_GPIO_Port GPIOC
+#define BLUE_BUTTON_EXTI_IRQn EXTI15_10_IRQn
+#define LM35_IN_Pin GPIO_PIN_1
+#define LM35_IN_GPIO_Port GPIOC
+#define LCD_SCL_Pin GPIO_PIN_8
+#define LCD_SCL_GPIO_Port GPIOB
+#define LCD_SDA_Pin GPIO_PIN_9
+#define LCD_SDA_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
