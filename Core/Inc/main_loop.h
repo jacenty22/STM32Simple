@@ -8,6 +8,6 @@
 #ifndef INC_MAIN_LOOP_H_
 #define INC_MAIN_LOOP_H_
 
-void Main_Function(void);
-
+void Initialize(void);
+void Main_Loop(void);
 #endif /* INC_MAIN_LOOP_H_ */

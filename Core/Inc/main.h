@@ -66,6 +66,8 @@ void Error_Handler(void);
 #define BLUE_BUTTON_EXTI_IRQn EXTI15_10_IRQn
 #define LM35_IN_Pin GPIO_PIN_1
 #define LM35_IN_GPIO_Port GPIOC
+#define DS18B20_Pin GPIO_PIN_10
+#define DS18B20_GPIO_Port GPIOA
 #define LCD_SCL_Pin GPIO_PIN_8
 #define LCD_SCL_GPIO_Port GPIOB
 #define LCD_SDA_Pin GPIO_PIN_9

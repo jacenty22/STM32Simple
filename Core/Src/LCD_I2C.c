@@ -7,8 +7,6 @@
 
 #include "LCD_I2C.h"
 #include "stm32f4xx_hal.h"
-#include "main.h"
-#include "timer.h"
 #include "string.h"
 #include "stdint.h"
 #include <stdarg.h>
@@ -112,7 +110,7 @@ static void Communication_Init(void)
 	LCDService.Delay(10);
 	LCD_Clear();
 	LCDService.Delay(100);
-	Set_Own_Characters();
+	//Set_Own_Characters();
 }
 void LCD_I2C_Init(uint8_t (*Transmit_For_LCD)(uint16_t deviceAddress, uint8_t *data, size_t dataSize, uint32_t timeout),
 		void (*Delay)(uint32_t delay), void (*I2C_For_LCD_Reinit)(void))
