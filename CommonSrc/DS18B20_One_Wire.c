@@ -29,7 +29,7 @@ enum
 	RESPONSE_ARRAY_SIZE
 };
 #define TIME_TEMPERATURE_CONVERSION 800	//w milisekundach
-#define TIME_REFRESH_TEMPERATURE_VALUE 1000//w milisekundach
+#define TIME_REFRESH_TEMPERATURE_VALUE 5000//w milisekundach
 #define RESET_ATTEMPT_INTERVAL 5000//w milisekundach
 #define SIGN_BIT_NUMBER 3
 

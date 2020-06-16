@@ -6,13 +6,13 @@
  */
 #include "stdint.h"
 #include <stddef.h>
-
+#include "stm32f411xe.h"
 #ifndef INC_HAL_FUNCTIONS_H_
 #define INC_HAL_FUNCTIONS_H_
 
 typedef struct
 {
-	uint32_t port;
+	GPIO_TypeDef *port;
 	uint32_t pin;
 } Pins_Struct;
 

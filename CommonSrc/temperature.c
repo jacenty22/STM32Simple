@@ -22,10 +22,12 @@ uint8_t Get_Current_Temperature(float *temperature)
 	}
 	return 0;
 }
+
 uint8_t Get_Average_Temperature(float *temperature)
 {
 	return 0; //todo zrobic usredniania z zapisem dla flash
 }
+
 void Temperature_Service(uint32_t adcValue)
 {
 	static float sumOfTemperatures = 0;

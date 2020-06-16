@@ -121,8 +121,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
 	  Main_Loop();
+
+    /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -376,6 +377,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : SECOND_BUTTON_Pin FIRST_BUTTON_Pin */
+  GPIO_InitStruct.Pin = SECOND_BUTTON_Pin|FIRST_BUTTON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : THIRD_BUTTON_Pin */
+  GPIO_InitStruct.Pin = THIRD_BUTTON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(THIRD_BUTTON_GPIO_Port, &GPIO_InitStruct);
+
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
@@ -385,9 +398,16 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+
 	if (GPIO_Pin == BLUE_BUTTON_Pin)
 	{
 		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+
+	}
+	else if(GPIO_Pin == THIRD_BUTTON_Pin)
+	{
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+
 	}
 	else
 	{
