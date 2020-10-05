@@ -1,0 +1,25 @@
+22:00:32 **** Incremental Build of configuration Debug for project hardwareF1 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/system_stm32f1xx.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/system_stm32f1xx.d" -MT"Core/Src/system_stm32f1xx.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/system_stm32f1xx.o"
+../Core/Src/main.c: In function 'HAL_TIM_PeriodElapsedCallback':
+../Core/Src/main.c:214:15: warning: unused variable 'i' [-Wunused-variable]
+  volatile int i = 0;
+               ^
+arm-none-eabi-gcc -o "hardwareF1.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\Jacek\STM32CubeIDE\newF1Project\hardwareF1\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="hardwareF1.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: hardwareF1.elf
+ 
+arm-none-eabi-objdump -h -S  hardwareF1.elf  > "hardwareF1.list"
+arm-none-eabi-objcopy  -O binary  hardwareF1.elf  "hardwareF1.bin"
+arm-none-eabi-size   hardwareF1.elf 
+   text	   data	    bss	    dec	    hex	filename
+   4124	     20	   1652	   5796	   16a4	hardwareF1.elf
+Finished building: default.size.stdout
+ 
+Finished building: hardwareF1.bin
+Finished building: hardwareF1.list
+ 
+ 
+
+22:00:33 Build Finished. 0 errors, 1 warnings. (took 1s.472ms)
+

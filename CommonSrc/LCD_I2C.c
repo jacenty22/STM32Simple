@@ -6,13 +6,13 @@
  */
 
 #include "LCD_I2C.h"
-#include "stm32f4xx_hal.h"
 #include "string.h"
 #include "stdint.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include "stdlib.h"
-
+//#include "stm32f1xx_hal_def.h"
+#include "timer.h"
 static void Communication_Init(void);
 static void LCD_Send_Cmd(uint8_t cmd);
 static void LCD_Send_Data(char data);
@@ -43,7 +43,7 @@ enum LCDCommands
 	SET_CGRAM_ADDRESS = 0x40,
 };
 #define REINIT_TIME_IN_MILIS 5000
-#define COMMUNICATION_OK_STATUS HAL_OK
+#define COMMUNICATION_OK_STATUS 0//HAL_OK
 
 #define SLAVE_ADDRESS_LCD 0x7E
 #define COUNT_OF_LETTERS_IN_ONE_LINE 16
@@ -61,6 +61,7 @@ enum LCDCommands
 
 #define SECOND_LINE_ADDRESS_OFFSET 0x40
 #define MAX_COUNT_OF_CHARACTERS_IN_GCRAM 8
+
 const char ownCharacters[9][8] =	//8 znaków po 8 bajtów na każdy; w komentarzu zapis ósemkowy
 		{
 		{ 0x0, 0x0, 0x0E, 0x01, 0x0F, 0x11, 0x0F, 0x04 },			//ą	//\245,
@@ -142,6 +143,7 @@ void LCD_Print_With_Position(char *str, uint8_t lineNumber, uint8_t position)
 	memset(LCDService.secondLineString, 0, sizeof(LCDService.secondLineString));
 	free(LCDService.multilineString);
 }
+
 void LCD_Print_MultiLines(char *format, ...)
 {
 	if (LCDService.communicationStatus != COMMUNICATION_OK_STATUS)

@@ -1,0 +1,16 @@
+LCD_I2C.c:292:13:LCD_Send_Cmd	24	static
+LCD_I2C.c:309:13:LCD_Send_Data	24	static
+LCD_I2C.c:78:13:Set_Own_Characters	16	static
+LCD_I2C.c:322:13:LCD_Send_String	16	static
+LCD_I2C.c:364:13:LCD_Send_String_2	16	static
+LCD_I2C.c:373:13:Set_Blank_Line	8	static
+LCD_I2C.c:389:13:Two_Lines_Separately_Service	8	static
+LCD_I2C.c:125:6:LCD_Set_Shifting_Time	0	static
+LCD_I2C.c:130:6:LCD_Print_With_Position	16	static
+LCD_I2C.c:170:6:LCD_Print_In_Separately_Line	24	static
+LCD_I2C.c:245:6:LCD_Clear	8	static
+LCD_I2C.c:89:13:Communication_Init	8	static
+LCD_I2C.c:116:6:LCD_I2C_Init	8	static
+LCD_I2C.c:420:13:Multi_Line_Service	24	static
+LCD_I2C.c:146:6:LCD_Print_MultiLines	24	static
+LCD_I2C.c:251:6:LCD_Service	16	static

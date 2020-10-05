@@ -57,8 +57,13 @@ static uint8_t DS18B20_Reset(void)
 	return response;
 }
 
-void DS18B20_Init(void (*Set_Pin_Input)(uint8_t pinNumber), void (*Set_Pin_Output)(uint8_t pinNumber), void (*Delays_us)(uint16_t delay),
-		void (*Write_Pin)(uint8_t pinNumber, uint8_t pinState), uint8_t (*Read_Pin)(uint8_t pinNumber), uint32_t (*Get_Sys_Time)(void))
+void DS18B20_Init(void (*Set_Pin_Input)(uint8_t pinNumber),
+		void (*Set_Pin_Output)(uint8_t pinNumber),
+		void (*Delays_us)(uint16_t delay),
+		void (*Write_Pin)(uint8_t pinNumber, uint8_t pinState),
+		uint8_t (*Read_Pin)(uint8_t pinNumber),
+		uint32_t (*Get_Sys_Time)(void)
+		)
 {
 	DS18B20Service.Set_Pin_Input = Set_Pin_Input;
 	DS18B20Service.Set_Pin_Output = Set_Pin_Output;
@@ -97,7 +102,6 @@ static void DS18B20_Write(uint8_t data)
 			DS18B20Service.Delays_us(60);  // wait for 60 us
 			DS18B20Service.Set_Pin_Input(DS18B20Service.pinNumber);
 			DS18B20Service.Delays_us(1);  // wait for 60 us
-
 		}
 	}
 }

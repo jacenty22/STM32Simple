@@ -1,0 +1,8 @@
+DS18B20_One_Wire.c:44:16:DS18B20_Reset	8	static
+DS18B20_One_Wire.c:84:13:DS18B20_Write	16	static
+DS18B20_One_Wire.c:109:16:DS18B20_Read	16	static
+DS18B20_One_Wire.c:155:13:DS18B20_Convert_Temperature	8	static
+DS18B20_One_Wire.c:130:13:DS18B20_Read_Scratchpad	32	static
+DS18B20_One_Wire.c:60:6:DS18B20_Init	8	static
+DS18B20_One_Wire.c:167:9:Get_Temperature	16	static
+DS18B20_One_Wire.c:177:6:DS18B20_Service	8	static

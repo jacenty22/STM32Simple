@@ -1,0 +1,4 @@
+timer.c:13:6:Time_Service	0	static
+timer.c:26:10:Get_Sys_Time	0	static
+timer.c:30:10:Get_Sys_Seconds	0	static
+timer.c:35:10:Get_Sys_Minutes	0	static

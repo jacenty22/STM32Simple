@@ -1,17 +1,17 @@
 [PreviousGenFiles]
 AdvancedFolderStructure=true
 HeaderFileListSize=3
-HeaderFiles#0=D:/Github/STM32Simple/Core/Inc/stm32f4xx_it.h
-HeaderFiles#1=D:/Github/STM32Simple/Core/Inc/stm32f4xx_hal_conf.h
-HeaderFiles#2=D:/Github/STM32Simple/Core/Inc/main.h
+HeaderFiles#0=D:/Github/STM32Simple/STM32F4/Core/Inc/stm32f4xx_it.h
+HeaderFiles#1=D:/Github/STM32Simple/STM32F4/Core/Inc/stm32f4xx_hal_conf.h
+HeaderFiles#2=D:/Github/STM32Simple/STM32F4/Core/Inc/main.h
 HeaderFolderListSize=1
-HeaderPath#0=D:/Github/STM32Simple/Core/Inc
+HeaderPath#0=D:/Github/STM32Simple/STM32F4/Core/Inc
 SourceFileListSize=3
-SourceFiles#0=D:/Github/STM32Simple/Core/Src/stm32f4xx_it.c
-SourceFiles#1=D:/Github/STM32Simple/Core/Src/stm32f4xx_hal_msp.c
-SourceFiles#2=D:/Github/STM32Simple/Core/Src/main.c
+SourceFiles#0=D:/Github/STM32Simple/STM32F4/Core/Src/stm32f4xx_it.c
+SourceFiles#1=D:/Github/STM32Simple/STM32F4/Core/Src/stm32f4xx_hal_msp.c
+SourceFiles#2=D:/Github/STM32Simple/STM32F4/Core/Src/main.c
 SourceFolderListSize=1
-SourcePath#0=D:/Github/STM32Simple/Core/Src
+SourcePath#0=D:/Github/STM32Simple/STM32F4/Core/Src
 HeaderFiles=;
 SourceFiles=;
 

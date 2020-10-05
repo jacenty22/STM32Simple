@@ -1,0 +1,3 @@
+temperature.c:16:9:Get_Current_Temperature	0	static
+temperature.c:26:9:Get_Average_Temperature	0	static
+temperature.c:31:6:Temperature_Service	24	static
