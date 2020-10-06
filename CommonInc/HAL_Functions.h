@@ -11,6 +11,7 @@
 #ifndef INC_HAL_FUNCTIONS_H_
 #define INC_HAL_FUNCTIONS_H_
 
+extern uint16_t tablicaADC[2];
 typedef struct
 {
 	GPIO_TypeDef *port;
@@ -22,6 +23,7 @@ typedef enum
 	DS18B20_PIN = 0x0,
 
 }PinNumbers;
+
 void Hardware_Init(void);
 uint8_t Transmit_For_LCD(uint16_t deviceAddress, uint8_t *data, size_t dataSize, uint32_t timeout);
 void Delay_In_Milis(uint32_t delay);

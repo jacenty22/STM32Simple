@@ -51,12 +51,12 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-int time = 0;
-int seconds = 0;
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c1;
 
@@ -70,6 +70,7 @@ TIM_HandleTypeDef htim3;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_I2C1_Init(void);
@@ -112,6 +113,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_I2C1_Init();
@@ -124,12 +126,9 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  volatile int x = 0;
   while (1)
   {
 	  Main_Loop();
-	  if(time)
-		  x++;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -358,6 +357,22 @@ static void MX_TIM3_Init(void)
 
 }
 
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+}
+
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -380,7 +395,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(DHT11_GPIO_Port, DHT11_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(TRANISTOR_BASE_GPIO_Port, TRANISTOR_BASE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TRANSISTOR_BASE_GPIO_Port, TRANSISTOR_BASE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : THIRD_BUTTON_Pin */
   GPIO_InitStruct.Pin = THIRD_BUTTON_Pin;
@@ -388,8 +403,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(THIRD_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SECOND_BUTTON_Pin FIRST_BUTTON_Pin */
-  GPIO_InitStruct.Pin = SECOND_BUTTON_Pin|FIRST_BUTTON_Pin;
+  /*Configure GPIO pins : FIRST_BUTTON_Pin SECOND_BUTTON_Pin */
+  GPIO_InitStruct.Pin = FIRST_BUTTON_Pin|SECOND_BUTTON_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -408,12 +423,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(DHT11_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : TRANISTOR_BASE_Pin */
-  GPIO_InitStruct.Pin = TRANISTOR_BASE_Pin;
+  /*Configure GPIO pin : TRANSISTOR_BASE_Pin */
+  GPIO_InitStruct.Pin = TRANSISTOR_BASE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(TRANISTOR_BASE_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(TRANSISTOR_BASE_GPIO_Port, &GPIO_InitStruct);
 
 }
 
