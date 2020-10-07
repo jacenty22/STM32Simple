@@ -10,8 +10,11 @@
 
 #ifndef INC_HAL_FUNCTIONS_H_
 #define INC_HAL_FUNCTIONS_H_
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
-extern uint16_t tablicaADC[2];
+extern uint32_t tablicaADC[2];
 typedef struct
 {
 	GPIO_TypeDef *port;
@@ -35,4 +38,9 @@ void Write_Pin(uint8_t pinNumber, uint8_t pinState);
 uint8_t Read_Pin(uint8_t pinNumber);
 void Timers_Callback_Service(TIM_HandleTypeDef *htim);
 void GPIOs_Callback_Service(uint16_t GPIO_Pin);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* INC_HAL_FUNCTIONS_H_ */

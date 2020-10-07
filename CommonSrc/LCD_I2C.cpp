@@ -13,13 +13,15 @@
 #include "stdlib.h"
 //#include "stm32f1xx_hal_def.h"
 #include "timer.h"
+#include <cstring>
+using namespace std;
 static void Communication_Init(void);
 static void LCD_Send_Cmd(uint8_t cmd);
 static void LCD_Send_Data(char data);
-static void LCD_Send_String(char *str);
-static void LCD_Send_String_2(char *str, uint8_t countOfChars);
+static void LCD_Send_String(const char *str);
+static void LCD_Send_String_2(const char *str, uint8_t countOfChars);
 static void Set_Blank_Line(uint8_t lineNumber);
-static void Two_Lines_Separately_Service(void);
+static void Separately_Lines_Service(void);
 static void Multi_Line_Service(uint8_t ignoreTime);
 
 LCD_struct LCDService;
@@ -74,7 +76,7 @@ const char ownCharacters[9][8] =	//8 znaków po 8 bajtów na każdy; w komentarz
 				{ 0x02, 0x04, 0x1F, 0x02, 0x04, 0x08, 0x1F, 0x0 },	//ź	//\253
 				{ 0x04, 0x00, 0x1F, 0x02, 0x04, 0x08, 0x1F, 0x0 },	//ż	//\276
 		};
-
+/*
 static void Set_Own_Characters(void)
 {
 	LCD_Send_Cmd(SET_CGRAM_ADDRESS);
@@ -86,6 +88,7 @@ static void Set_Own_Characters(void)
 		}
 	}
 }
+*/
 static void Communication_Init(void)
 {
 	// 4 bit initialisation
@@ -168,7 +171,7 @@ void LCD_Print_MultiLines(char *format, ...)
 	Multi_Line_Service(1);
 }
 
-void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber)
+void LCD_Print_In_Separately_Line(const char *textToPrint, uint8_t lineNumber)
 {
 	if (lineNumber >= COUNT_OF_LINES || LCDService.communicationStatus != COMMUNICATION_OK_STATUS)
 		return;
@@ -282,7 +285,7 @@ void LCD_Service(void)
 	}
 	if (LCDService.displayMode == TWO_LINES_SEPARATELY_MODE)
 	{
-		Two_Lines_Separately_Service();
+		Separately_Lines_Service();
 	}
 	else if (LCDService.displayMode == MULTILINE_MODE)
 	{
@@ -320,7 +323,7 @@ static void LCD_Send_Data(char data)
 	LCDService.communicationStatus = LCDService.Transmit_For_LCD(SLAVE_ADDRESS_LCD, (uint8_t*) data_t, sizeof(data_t), 200);
 }
 
-static void LCD_Send_String(char *str)
+static void LCD_Send_String(const char *str)
 {
 	uint8_t index = 0;
 	while (str[index])
@@ -362,7 +365,7 @@ static void LCD_Send_String(char *str)
 	}
 }
 
-static void LCD_Send_String_2(char *str, uint8_t countOfChars)
+static void LCD_Send_String_2(const char *str, uint8_t countOfChars)
 {
 	while (countOfChars)
 	{
@@ -387,7 +390,7 @@ static void Set_Blank_Line(uint8_t lineNumber)
 	}
 }
 
-static void Two_Lines_Separately_Service(void)
+static void Separately_Lines_Service(void)
 {
 	if (LCDService.shiftTime == 0)
 		return;
@@ -397,7 +400,7 @@ static void Two_Lines_Separately_Service(void)
 		if (LCDService.firstLineString[0] != 0)
 		{
 			LCDService.firstLinePrintPosition++;
-			if (LCDService.firstLinePrintPosition + COUNT_OF_LETTERS_IN_ONE_LINE > strlen(LCDService.firstLineString))
+			if (LCDService.firstLinePrintPosition + COUNT_OF_LETTERS_IN_ONE_LINE > (uint8_t)strlen(LCDService.firstLineString))
 			{
 				LCDService.firstLinePrintPosition = 0;
 			}
@@ -408,7 +411,7 @@ static void Two_Lines_Separately_Service(void)
 		if (LCDService.secondLineString[0] != 0)
 		{
 			LCDService.secondLinePrintPosition++;
-			if (LCDService.secondLinePrintPosition + COUNT_OF_LETTERS_IN_ONE_LINE > strlen(LCDService.secondLineString))
+			if (LCDService.secondLinePrintPosition + COUNT_OF_LETTERS_IN_ONE_LINE > (uint8_t)strlen(LCDService.secondLineString))
 			{
 				LCDService.secondLinePrintPosition = 0;
 			}

@@ -1,4 +1,4 @@
-CommonSrc/main_loop.o: D:/Github/STM32Simple/CommonSrc/main_loop.c \
+CommonSrc/main_loop.o: D:/Github/STM32Simple/CommonSrc/main_loop.cpp \
  ../../../CommonInc/timer.h ../../../CommonInc/temperature.h \
  ../../../CommonInc/HAL_Functions.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
@@ -29,7 +29,7 @@ CommonSrc/main_loop.o: D:/Github/STM32Simple/CommonSrc/main_loop.c \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../../../CommonInc/LCD_I2C.h ../../../CommonInc/DS18B20_One_Wire.h \
- ../Core/Inc/main.h
+ ../Core/Inc/main.h ../../../CommonInc/main_loop.h
 
 ../../../CommonInc/timer.h:
 
@@ -96,3 +96,5 @@ CommonSrc/main_loop.o: D:/Github/STM32Simple/CommonSrc/main_loop.c \
 ../../../CommonInc/DS18B20_One_Wire.h:
 
 ../Core/Inc/main.h:
+
+../../../CommonInc/main_loop.h:

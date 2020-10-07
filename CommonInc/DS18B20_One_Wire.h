@@ -7,7 +7,9 @@
 
 #ifndef INC_DS18B20_ONE_WIRE_H_
 #define INC_DS18B20_ONE_WIRE_H_
-
+#ifdef __cplusplus
+ extern "C" {
+#endif
 #include "stdint.h"
 
 typedef struct
@@ -31,5 +33,9 @@ void DS18B20_Init(void (*Set_Pin_Input)(uint8_t pinNumber), void (*Set_Pin_Outpu
 		void (*Write_Pin)(uint8_t pinNumber, uint8_t pinState), uint8_t (*Read_Pin)(uint8_t pinNumber), uint32_t (*Get_Sys_Time)(void));
 uint8_t Get_Temperature(float *temperature);
 void DS18B20_Service(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INC_DS18B20_ONE_WIRE_H_ */

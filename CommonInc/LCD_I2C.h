@@ -9,6 +9,10 @@
 
 #ifndef SRC_LCD_I2C_H_
 #define SRC_LCD_I2C_H_
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 #define ONE_LINE_MAX_LENGTH 32
 
 typedef struct LCD_struct
@@ -36,7 +40,11 @@ void LCD_Service(void);
 void LCD_Set_Shifting_Time(uint16_t time);
 void LCD_Print_With_Position(char *str, uint8_t lineNumber, uint8_t position);
 void LCD_Print_MultiLines(char *format, ...);
-void LCD_Print_In_Separately_Line(char *textToPrint, uint8_t lineNumber);
+void LCD_Print_In_Separately_Line(const char *textToPrint, uint8_t lineNumber);
 void LCD_Clear(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SRC_LCD_I2C_H_ */

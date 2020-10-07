@@ -10,8 +10,11 @@
 #include "LCD_I2C.h"
 #include "DS18B20_One_Wire.h"
 #include "main.h"
+#include "main_loop.h"
+
 uint32_t time = 0;
 uint16_t volatile adcValue = 0;
+
 void Initialize(void)
 {
 	Hardware_Init();

@@ -8,6 +8,9 @@
 
 #ifndef INC_TEMPERATURE_H_
 #define INC_TEMPERATURE_H_
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 typedef struct temperature_struct
 {
@@ -21,4 +24,9 @@ extern temperature_struct temperatureService;
 void Temperature_Service(uint32_t adcValue);
 uint8_t Get_Current_Temperature(float *temperature);
 uint8_t Get_Average_Temperature(float *temperature);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* INC_TEMPERATURE_H_ */

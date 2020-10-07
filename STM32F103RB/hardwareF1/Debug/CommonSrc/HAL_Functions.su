@@ -1,11 +1,11 @@
-HAL_Functions.c:35:6:Hardware_Init	8	static
-HAL_Functions.c:51:6:Timers_Callback_Service	8	static
-HAL_Functions.c:59:6:GPIOs_Callback_Service	8	static,ignoring_inline_asm
-HAL_Functions.c:71:9:Transmit_For_LCD	16	static
-HAL_Functions.c:76:6:Delay_In_Milis	8	static
-HAL_Functions.c:81:6:I2C_Reinit_For_LCD	8	static
-HAL_Functions.c:88:6:Delays_us	0	static
-HAL_Functions.c:95:6:Set_Pin_Output	24	static
-HAL_Functions.c:107:6:Set_Pin_Input	24	static
-HAL_Functions.c:119:6:Write_Pin	8	static
-HAL_Functions.c:126:9:Read_Pin	8	static
+HAL_Functions.cpp:35:6:void Hardware_Init()	8	static
+HAL_Functions.cpp:51:6:void Timers_Callback_Service(TIM_HandleTypeDef*)	16	static
+HAL_Functions.cpp:59:6:void GPIOs_Callback_Service(uint16_t)	16	static,ignoring_inline_asm
+HAL_Functions.cpp:71:9:uint8_t Transmit_For_LCD(uint16_t, uint8_t*, size_t, uint32_t)	32	static
+HAL_Functions.cpp:76:6:void Delay_In_Milis(uint32_t)	16	static
+HAL_Functions.cpp:81:6:void I2C_Reinit_For_LCD()	8	static
+HAL_Functions.cpp:88:6:void Delays_us(uint16_t)	16	static
+HAL_Functions.cpp:95:6:void Set_Pin_Output(uint8_t)	32	static
+HAL_Functions.cpp:107:6:void Set_Pin_Input(uint8_t)	32	static
+HAL_Functions.cpp:119:6:void Write_Pin(uint8_t, uint8_t)	16	static
+HAL_Functions.cpp:126:9:uint8_t Read_Pin(uint8_t)	16	static

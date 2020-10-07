@@ -1,5 +1,5 @@
 CommonSrc/HAL_Functions.o: \
- D:/Github/STM32Simple/CommonSrc/HAL_Functions.c \
+ D:/Github/STM32Simple/CommonSrc/HAL_Functions.cpp \
  ../../../CommonInc/HAL_Functions.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \

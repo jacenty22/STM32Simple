@@ -1,4 +1,4 @@
-CommonSrc/temperature.o: D:/Github/STM32Simple/CommonSrc/temperature.c \
+CommonSrc/temperature.o: D:/Github/STM32Simple/CommonSrc/temperature.cpp \
  ../../../CommonInc/temperature.h
 
 ../../../CommonInc/temperature.h:

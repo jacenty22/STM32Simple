@@ -7,7 +7,15 @@
 
 #ifndef INC_MAIN_LOOP_H_
 #define INC_MAIN_LOOP_H_
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 void Initialize(void);
 void Main_Loop(void);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* INC_MAIN_LOOP_H_ */

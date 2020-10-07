@@ -25,7 +25,7 @@ I2C_HandleTypeDef *i2cForLCDPtr;
 
 #endif
 
-uint16_t tablicaADC[2] = {0};
+uint32_t tablicaADC[2] = {0};
 Pins_Struct PinsConfiguration[] =
 {
 		{ (GPIO_TypeDef*) DS18b20_GPIO_Port, DS18b20_Pin },
@@ -43,7 +43,7 @@ void Hardware_Init(void)
 #elif defined(STM32F103xB)
 	HAL_TIM_Base_Start_IT(&htim2);
 	HAL_TIM_Base_Start_IT(&htim3);
-	HAL_ADC_Start_DMA(&hadc1, tablicaADC, sizeof(tablicaADC));
+	HAL_ADC_Start_DMA(&hadc1, tablicaADC, sizeof(tablicaADC)/sizeof(tablicaADC[0]));
 #endif
 	HAL_GPIO_WritePin(TRANSISTOR_BASE_GPIO_Port, TRANSISTOR_BASE_Pin, GPIO_PIN_SET);
 }
@@ -120,7 +120,7 @@ void Write_Pin(uint8_t pinNumber, uint8_t pinState)
 {
 	if (pinNumber >= sizeof(PinsConfiguration) / sizeof(PinsConfiguration[0]))
 		return;
-	HAL_GPIO_WritePin(PinsConfiguration[pinNumber].port, PinsConfiguration[pinNumber].pin, pinState);
+	HAL_GPIO_WritePin(PinsConfiguration[pinNumber].port, PinsConfiguration[pinNumber].pin, (GPIO_PinState)pinState);
 }
 
 uint8_t Read_Pin(uint8_t pinNumber)

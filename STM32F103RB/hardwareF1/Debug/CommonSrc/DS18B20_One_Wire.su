@@ -1,8 +1,9 @@
-DS18B20_One_Wire.c:44:16:DS18B20_Reset	8	static
-DS18B20_One_Wire.c:84:13:DS18B20_Write	16	static
-DS18B20_One_Wire.c:109:16:DS18B20_Read	16	static
-DS18B20_One_Wire.c:155:13:DS18B20_Convert_Temperature	8	static
-DS18B20_One_Wire.c:130:13:DS18B20_Read_Scratchpad	32	static
-DS18B20_One_Wire.c:60:6:DS18B20_Init	8	static
-DS18B20_One_Wire.c:167:9:Get_Temperature	16	static
-DS18B20_One_Wire.c:177:6:DS18B20_Service	8	static
+cmath:618:3:constexpr bool std::isnan(float)	16	static
+DS18B20_One_Wire.cpp:44:16:uint8_t DS18B20_Reset()	16	static
+DS18B20_One_Wire.cpp:60:6:void DS18B20_Init(void (*)(uint8_t), void (*)(uint8_t), void (*)(uint16_t), void (*)(uint8_t, uint8_t), uint8_t (*)(uint8_t), uint32_t (*)())	24	static
+DS18B20_One_Wire.cpp:84:13:void DS18B20_Write(uint8_t)	24	static
+DS18B20_One_Wire.cpp:109:16:uint8_t DS18B20_Read()	16	static
+DS18B20_One_Wire.cpp:130:13:void DS18B20_Read_Scratchpad()	32	static
+DS18B20_One_Wire.cpp:155:13:void DS18B20_Convert_Temperature()	8	static
+DS18B20_One_Wire.cpp:167:9:uint8_t Get_Temperature(float*)	16	static
+DS18B20_One_Wire.cpp:177:6:void DS18B20_Service()	8	static
