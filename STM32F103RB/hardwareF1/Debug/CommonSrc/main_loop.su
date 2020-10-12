@@ -1,2 +1,0 @@
-main_loop.cpp:18:6:void Initialize()	16	static
-main_loop.cpp:27:6:void Main_Loop()	8	static

@@ -1,3 +1,0 @@
-temperature.cpp:16:9:uint8_t Get_Current_Temperature(float*)	16	static
-temperature.cpp:26:9:uint8_t Get_Average_Temperature(float*)	16	static
-temperature.cpp:31:6:void Temperature_Service(uint32_t)	24	static
