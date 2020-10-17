@@ -9,19 +9,20 @@
 #include "stdint.h"
 #include <cstddef>
 #include <cstring>
-#include "globalDefines.h"
 
 using namespace std;
 
-ADCAveragingService::ADCAveragingService(uint16_t maxResolution)
+ADCAveragingService::ADCAveragingService(uint16_t maxResolution, uint8_t countOfChannels, uint8_t countOfSamples)
 {
-	if (maxResolution == 0)
+	if (maxResolution == 0 || countOfChannels == 0 || countOfSamples == 0)
 	{
-		throw "Resolution must be greater than zero!";
+		throw "Values must be greater than zero!";
 	}
 	else
 	{
 		this->maxResolution = maxResolution;
+		this->countOfChannels = countOfChannels;
+		this->countOfSamplesPerChannel = countOfSamples;
 	}
 }
 
@@ -41,7 +42,7 @@ uint32_t* ADCAveragingService::Get_ADC_Array_Address()
 
 uint32_t ADCAveragingService::Get_ADC_Average_Value_For_Channel(uint8_t channelNumber)
 {
-	if (channelNumber >= COUNT_OF_ADC_CHANNELS)
+	if (channelNumber >= countOfChannels)
 	{
 		return 0;
 	}
@@ -53,7 +54,7 @@ uint32_t ADCAveragingService::Get_ADC_Average_Value_For_Channel(uint8_t channelN
 
 float ADCAveragingService::Get_Percentage_Of_Supply_Voltage_For_Channel(uint8_t channelNumber)
 {
-	if (channelNumber >= COUNT_OF_ADC_CHANNELS)
+	if (channelNumber >= countOfChannels)
 	{
 		return 0;
 	}
@@ -76,16 +77,17 @@ void ADCAveragingService::Update_Average_ADC_Values()
 {
 	if (isNewDataToAveraging)
 	{
-		for (uint8_t channel = 0; channel < COUNT_OF_ADC_CHANNELS; channel++)
+		uint16_t countOfSamples = countOfSamplesPerChannel * countOfChannels;
+		for (uint8_t channel = 0; channel < countOfChannels; channel++)
 		{
 			uint32_t sumOfValues = 0;
 			//sumujemy dla wybranego kanalu ADC wartosci z tablicy. Dla wskazanego kanalu pierwsza wartosc znajduje sie pod indeksem channel.
 			//Przyklad: Gdy mamy 3 kanaly ADC, to dla kanalu pierwszego (channel = 0) bierzemy wartosci z tablicy spod indeksow 0, 3, 6 itd.
-			for (uint8_t idx = channel; idx < COUNT_OF_SAMPLES; idx += COUNT_OF_ADC_CHANNELS)
+			for (uint8_t idx = channel; idx < countOfSamples; idx += countOfChannels)
 			{
 				sumOfValues += CopyOfADCValues[idx];
 			}
-			averageADCValues[channel] = sumOfValues / COUNT_OF_SAMPLES_PER_CHANNEL;
+			averageADCValues[channel] = sumOfValues / countOfSamplesPerChannel;
 		}
 		isNewDataToAveraging = false;
 	}

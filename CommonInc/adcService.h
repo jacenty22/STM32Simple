@@ -10,7 +10,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "globalDefines.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -19,7 +18,7 @@ extern "C"
 	class ADCAveragingService
 	{
 		public:
-			ADCAveragingService(uint16_t maxResolution);
+			ADCAveragingService(uint16_t maxResolution, uint8_t countOfChannels, uint8_t countOfSamples);
 			~ADCAveragingService();
 			size_t Get_ADC_Array_Size();
 			uint32_t* Get_ADC_Array_Address();
@@ -33,6 +32,8 @@ extern "C"
 			uint32_t averageADCValues[COUNT_OF_ADC_CHANNELS];
 			bool isNewDataToAveraging;
 			uint16_t maxResolution;
+			uint8_t countOfChannels;
+			uint8_t countOfSamplesPerChannel;
 
 	};
 
