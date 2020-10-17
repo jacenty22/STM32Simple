@@ -30,14 +30,17 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <adcService.h>
+#include <internalSensorTemperature.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "timer.h"
 #include "HAL_Functions.h"
-#include "temperature.h"
 #include "main_loop.h"
+#include "globalObjects.h"
+#include "PinsService.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,6 +67,7 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
+//ADCAveragingService ADCAverage;
 
 /* USER CODE END PV */
 
@@ -442,12 +446,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	Timers_Callback_Service(htim);
 }
-
+/*funkcja wywolywana jest, gdy tablica z wartosciami z ADC zostanie wypelniona*/
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *AdcHandle)
+{
+	adcService.Copy_Filled_ADC_Buffer();
+}
+/*
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	Temperature_Service(HAL_ADC_GetValue(hadc));
 }
-
+*/
 /* USER CODE END 4 */
 
 /**

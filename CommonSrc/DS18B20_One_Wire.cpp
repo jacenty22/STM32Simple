@@ -9,7 +9,7 @@
 #include "math.h"
 #include "string.h"
 
-enum
+typedef enum
 {
 	CONVERT_T_CMD = 0x44, SKIP_ROM_CMD = 0xCC, READ_SCRATCHPAD_CMD = 0xBE,
 } commands;

@@ -32,15 +32,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-extern ADC_HandleTypeDef hadc1;
-extern I2C_HandleTypeDef hi2c1;
-extern TIM_HandleTypeDef htim2;
-extern TIM_HandleTypeDef htim3;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

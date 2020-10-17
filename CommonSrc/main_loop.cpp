@@ -4,16 +4,19 @@
  *  Created on: May 24, 2020
  *      Author: Jacek
  */
+#include <adcService.h>
+#include <internalSensorTemperature.h>
 #include "timer.h"
-#include "temperature.h"
 #include "HAL_Functions.h"
 #include "LCD_I2C.h"
 #include "DS18B20_One_Wire.h"
 #include "main.h"
 #include "main_loop.h"
+#include "globalObjects.h"
+#include "PinsService.h"
+#include "LM35Sensor.h"
 
-uint32_t time = 0;
-uint16_t volatile adcValue = 0;
+volatile float temperature = 0;
 
 void Initialize(void)
 {
@@ -26,14 +29,10 @@ void Initialize(void)
 
 void Main_Loop(void)
 {
-	if(Get_Sys_Seconds() != time)
-	{
-		if(tablicaADC[0])
-			time = Get_Sys_Seconds();
-
-		LCD_Print_In_Separately_Line("kupa",0);
-		LCD_Print_In_Separately_Line("kupa",1);
-	}
+	adcService.Update_Average_ADC_Values();
 	DS18B20_Service();
 	LCD_Service();
+	LM35Temp.Get_Temperature_For_Percentage_Of_Voltage(adcService.Get_Percentage_Of_Supply_Voltage_For_Channel(0));
+	temperature = internalTemp.Get_Temperature_For_Percentage_Of_Voltage(adcService.Get_Percentage_Of_Supply_Voltage_For_Channel(1));
+
 }
