@@ -4,7 +4,7 @@
  *  Created on: 17 paź 2020
  *      Author: Jacek
  */
-#include "LM35Sensor.h"
+#include <lm35Sensor.h>
 
 LM35TemperatureCalculation::LM35TemperatureCalculation(float supplyVoltage, float averageSlope) :
 		TemperatureCalculation(supplyVoltage,averageSlope)

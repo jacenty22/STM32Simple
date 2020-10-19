@@ -6,7 +6,7 @@
  */
 
 #include <adcService.h>
-#include "HAL_Functions.h"
+#include <halFunctions.h>
 #include "main.h"
 #include "timer.h"
 #include "globalObjects.h"

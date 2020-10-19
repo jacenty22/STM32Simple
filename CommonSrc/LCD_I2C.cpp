@@ -5,7 +5,7 @@
  *      Author: Jacek
  */
 
-#include "LCD_I2C.h"
+#include <lcd_i2c.h>
 #include "string.h"
 #include "stdint.h"
 #include <stdarg.h>

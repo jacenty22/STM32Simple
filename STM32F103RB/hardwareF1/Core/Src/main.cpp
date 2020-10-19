@@ -31,16 +31,16 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <adcService.h>
+#include <halFunctions.h>
 #include <internalSensorTemperature.h>
+#include <pinsService.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "timer.h"
-#include "HAL_Functions.h"
 #include "main_loop.h"
 #include "globalObjects.h"
-#include "PinsService.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

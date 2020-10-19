@@ -4,7 +4,7 @@
  *  Created on: May 24, 2020
  *      Author: Jacek
  */
-#include "DS18B20_One_Wire.h"
+#include <ds18b20OneWire.h>
 #include "stdint.h"
 #include "math.h"
 #include "string.h"

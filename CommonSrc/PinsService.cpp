@@ -4,7 +4,7 @@
  *  Created on: 15 paź 2020
  *      Author: Jacek
  */
-#include "PinsService.h"
+#include <pinsService.h>
 #include "stm32f1xx_hal.h"
 #include "main.h"
 

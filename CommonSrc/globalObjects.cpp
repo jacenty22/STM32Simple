@@ -5,12 +5,12 @@
  *      Author: Jacek
  */
 
+#include <lm35Sensor.h>
 #include "globalObjects.h"
 #include "adcService.h"
 #include "internalSensorTemperature.h"
 #include "globalDefines.h"
 #include "temperatureService.h"
-#include "LM35Sensor.h"
 
 ADCAveragingService adcService(ADC_RESOLUTION, COUNT_OF_ADC_CHANNELS, COUNT_OF_SAMPLES_PER_CHANNEL);
 TemperatureService temperatureService(&adcService);

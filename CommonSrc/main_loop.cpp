@@ -5,16 +5,16 @@
  *      Author: Jacek
  */
 #include <adcService.h>
+#include <ds18b20OneWire.h>
+#include <halFunctions.h>
 #include <internalSensorTemperature.h>
+#include <lcd_i2c.h>
+#include <lm35Sensor.h>
+#include <pinsService.h>
 #include "timer.h"
-#include "HAL_Functions.h"
-#include "LCD_I2C.h"
-#include "DS18B20_One_Wire.h"
 #include "main.h"
 #include "main_loop.h"
 #include "globalObjects.h"
-#include "PinsService.h"
-#include "LM35Sensor.h"
 #include "temperatureService.h"
 
 volatile float temperature = 0;
