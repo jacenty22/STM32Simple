@@ -7,25 +7,24 @@
 
 #include "stm32f1xx_hal.h"
 #include "adcService.h"
-#include "internalSensorTemperature.h"
-#include "LM35Sensor.h"
+#include "temperatureService.h"
 
 #ifndef GLOBALOBJECTS_H_
 #define GLOBALOBJECTS_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-extern ADCAveragingService adcService;
-extern InternalSensorTempCalc internalTemp;
-extern LM35TemperatureCalculation LM35Temp;
+	extern ADCAveragingService adcService;
+	extern TemperatureService temperatureService;
 
-extern ADC_HandleTypeDef hadc1;
-extern I2C_HandleTypeDef hi2c1;
-extern TIM_HandleTypeDef htim2;
-extern TIM_HandleTypeDef htim3;
-
+	extern ADC_HandleTypeDef hadc1;
+	extern I2C_HandleTypeDef hi2c1;
+	extern TIM_HandleTypeDef htim2;
+	extern TIM_HandleTypeDef htim3;
+	void Initialize_Global_Objects();
 #ifdef __cplusplus
 }
 #endif

@@ -23,6 +23,10 @@ extern "C"
 #define COUNT_OF_SAMPLES_PER_CHANNEL 10
 #define COUNT_OF_SAMPLES (COUNT_OF_SAMPLES_PER_CHANNEL * COUNT_OF_ADC_CHANNELS)
 
+	typedef enum
+	{
+		LM35_SENSOR_INPUT = 0x0, INTERNAL_SENSOR_INPUT = 0x1
+	} ADCChannelNumbers;
 #ifdef __cplusplus
 }
 #endif

@@ -20,7 +20,7 @@ extern "C"
 			float averageSlope;
 		public:
 			TemperatureCalculation(float supplyVoltage, float averageSlope);
-			~TemperatureCalculation();
+			virtual ~TemperatureCalculation();
 			void Set_Supply_Voltage(float supplyVoltage);
 			void Set_Average_Slope(float averageSlope);
 			float Get_Supply_Voltage();
