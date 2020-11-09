@@ -16,12 +16,15 @@
 #include "main_loop.h"
 #include "globalObjects.h"
 #include "temperatureService.h"
+#include "cstdio"
+#include "dht11.h"
 
-volatile float temperature = 0;
+using namespace std;
 
 void Initialize(void)
 {
 	Hardware_Init();
+	Initialize_Pins_Configuration();
 	Initialize_Global_Objects();
 	LCD_I2C_Init(Transmit_For_LCD, Delay_In_Milis, I2C_Reinit_For_LCD);
 	LCD_Set_Shifting_Time(2000);
@@ -45,5 +48,7 @@ void Main_Loop(void)
 	adcService.Update_Average_ADC_Values();
 	DS18B20_Service();
 	LCD_Service();
+	pinsFiltering.Filter_Pins_States();
 	Functions_Called_Once_Every_Second();
+	dht11.Communication_Loop();
 }

@@ -8,6 +8,8 @@
 #include "stm32f1xx_hal.h"
 #include "adcService.h"
 #include "temperatureService.h"
+#include "pinsFiltering.h"
+#include "dht11.h"
 
 #ifndef GLOBALOBJECTS_H_
 #define GLOBALOBJECTS_H_
@@ -19,11 +21,14 @@ extern "C"
 
 	extern ADCAveragingService adcService;
 	extern TemperatureService temperatureService;
+	extern PinsFiltering pinsFiltering;
 
 	extern ADC_HandleTypeDef hadc1;
 	extern I2C_HandleTypeDef hi2c1;
 	extern TIM_HandleTypeDef htim2;
 	extern TIM_HandleTypeDef htim3;
+	extern DHT11_Service dht11;
+
 	void Initialize_Global_Objects();
 #ifdef __cplusplus
 }

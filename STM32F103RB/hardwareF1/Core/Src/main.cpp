@@ -30,10 +30,6 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include <adcService.h>
-#include <halFunctions.h>
-#include <internalSensorTemperature.h>
-#include <pinsService.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -41,6 +37,8 @@
 #include "timer.h"
 #include "main_loop.h"
 #include "globalObjects.h"
+#include "halFunctions.h"
+#include "pinsService.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -85,7 +83,6 @@ static void MX_ADC1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -403,13 +400,13 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : THIRD_BUTTON_Pin */
   GPIO_InitStruct.Pin = THIRD_BUTTON_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(THIRD_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : FIRST_BUTTON_Pin SECOND_BUTTON_Pin */
   GPIO_InitStruct.Pin = FIRST_BUTTON_Pin|SECOND_BUTTON_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -422,7 +419,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : DHT11_Pin */
   GPIO_InitStruct.Pin = DHT11_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(DHT11_GPIO_Port, &GPIO_InitStruct);
@@ -437,10 +434,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	GPIOs_Callback_Service(GPIO_Pin);
-}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {

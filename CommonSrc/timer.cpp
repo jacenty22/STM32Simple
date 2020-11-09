@@ -7,16 +7,16 @@
 #include "timer.h"
 #include "stdint.h"
 
-#define INTERUPT_TIME_IN_MILIS 10
+#define INTERUPT_TIME_IN_MILIS 1
 timer_struct timerService;
 
 void Time_Service(void)
 {
-	timerService.miliseconds+=INTERUPT_TIME_IN_MILIS;
-	if(timerService.miliseconds % 1000 == 0)
+	timerService.miliseconds += INTERUPT_TIME_IN_MILIS;
+	if (timerService.miliseconds % 1000 == 0)
 	{
 		timerService.seconds++;
-		if(timerService.seconds %60==0)
+		if (timerService.seconds % 60 == 0)
 		{
 			timerService.minutes++;
 		}
