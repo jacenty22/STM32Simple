@@ -38,6 +38,11 @@ using namespace std;
 			void SetInputStateForReadResponse();
 			uint8_t IsStateDetectedWithTimeout(uint8_t expectedState, uint16_t timeout);
 			bool IsDataValid(uint8_t dataReceived[]);
+			void CommunicationWithDHT();
+			void CheckIfTimeElapsedToStart();
+			void SetLowStateForStart();
+			void CheckIfEnoughTimeElapsedForWaiting();
+			void SetHighStateForWaiting();
 		public:
 			DHT11_Service(function<uint8_t(uint8_t)> Read_Pin,
 					function<void(const uint16_t)> Delay_us,

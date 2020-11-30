@@ -164,67 +164,101 @@ bool DHT11_Service::IsDataValid(uint8_t dataReceived[])
 	return false;
 }
 
+void DHT11_Service::SetHighStateForWaiting()
+{
+	Set_Pin_Output(pinNumber);
+	Write_Pin(pinNumber, 1);
+	previousMilisecond = Get_Miliseconds();
+	communicationState = DHT11_WAITING_TO_START;
+}
+
+void DHT11_Service::CheckIfEnoughTimeElapsedForWaiting()
+{
+	if (Get_Miliseconds() - previousMilisecond > timeForReadDataAgain)
+	{
+		communicationState = DHT11_SET_LOW_STATE_FOR_START;
+	}
+}
+
+void DHT11_Service::SetLowStateForStart()
+{
+	Write_Pin(pinNumber, 0);
+	Set_Pin_Input(pinNumber);
+	previousMilisecond = Get_Miliseconds();
+	communicationState = DHT11_WAITING_IN_LOW_STATE_TO_START;
+}
+
+void DHT11_Service::CheckIfTimeElapsedToStart()
+{
+	if (Get_Miliseconds() - previousMilisecond > lowStateMCUStartSignalDur)
+	{
+		communicationState = DHT11_COMMUNICATION_IN_PROGRESS;
+	}
+}
+
+void DHT11_Service::CommunicationWithDHT()
+{
+	uint8_t dataReceived[bytesToRead] =
+	{ 0 };
+	uint8_t isStateDetected;
+	isDataValid = false;
+	SetHighStateForStart();
+	SetInputStateForReadResponse();
+	isStateDetected = IsStateDetectedWithTimeout(0, highStateMCUStartSignalDur); //czekamy na stan NISKI trwajacy 80us
+	if (isStateDetected == EXPECTED_STATE_DETECTED)
+	{
+		isStateDetected = IsStateDetectedWithTimeout(1, responseSignalDuration); //czekamy na stan WYSOKI trwajacy 80us
+		if (isStateDetected == EXPECTED_STATE_DETECTED)
+		{
+			isStateDetected = IsStateDetectedWithTimeout(0, responseSignalDuration); //czekamy na stan NISKI trwajacy 50us
+			if (isStateDetected == EXPECTED_STATE_DETECTED)
+			{
+				ReadDataFromDHT(dataReceived);
+				if (IsDataValid(dataReceived))
+				{
+					isDataValid = true;
+					humadity = dataReceived[0];
+					humadity += dataReceived[1]/(float)100;
+					temperature = dataReceived[2];
+					temperature += dataReceived[3]/(float)100;
+				}
+			}
+		}
+	}
+	communicationState = DHT11_SET_HIGH_STATE_FOR_WAITING;
+}
+
 void DHT11_Service::Communication_Loop(void)
 {
 	switch (communicationState)
 	{
 		case DHT11_SET_HIGH_STATE_FOR_WAITING:
 		{
-			Set_Pin_Output(pinNumber);
-			Write_Pin(pinNumber, 1);
-			previousMilisecond = Get_Miliseconds();
-			communicationState = DHT11_WAITING_TO_START;
+			SetHighStateForWaiting();
 			break;
 		}
 		case DHT11_WAITING_TO_START:
 		{
-			if (Get_Miliseconds() - previousMilisecond > timeForReadDataAgain)
-			{
-				communicationState = DHT11_SET_LOW_STATE_FOR_START;
-			}
+			CheckIfEnoughTimeElapsedForWaiting();
 			break;
 		}
 		case DHT11_SET_LOW_STATE_FOR_START:
 		{
-			Write_Pin(pinNumber, 0);
-			Set_Pin_Input(pinNumber);
-			previousMilisecond = Get_Miliseconds();
-			communicationState = DHT11_WAITING_IN_LOW_STATE_TO_START;
+			SetLowStateForStart();
 			break;
 		}
 		case DHT11_WAITING_IN_LOW_STATE_TO_START:
 		{
-			if (Get_Miliseconds() - previousMilisecond > lowStateMCUStartSignalDur)
-			{
-				communicationState = DHT11_COMMUNICATION_IN_PROGRESS;
-			}
+			CheckIfTimeElapsedToStart();
 			break;
 		}
 		case DHT11_COMMUNICATION_IN_PROGRESS:
 		{
-			uint8_t dataReceived[bytesToRead] =
-			{ 0 };
-			uint8_t isStateDetected;
-			isDataValid = false;
-			SetHighStateForStart();
-			SetInputStateForReadResponse();
-			isStateDetected = IsStateDetectedWithTimeout(0, highStateMCUStartSignalDur); //czekamy na stan NISKI trwajacy 80us
-			if (isStateDetected == EXPECTED_STATE_DETECTED)
-			{
-				isStateDetected = IsStateDetectedWithTimeout(1, responseSignalDuration); //czekamy na stan WYSOKI trwajacy 80us
-				if (isStateDetected == EXPECTED_STATE_DETECTED)
-				{
-					isStateDetected = IsStateDetectedWithTimeout(0, responseSignalDuration); //czekamy na stan NISKI trwajacy 50us
-					if (isStateDetected == EXPECTED_STATE_DETECTED)
-					{
-						ReadDataFromDHT(dataReceived);
-						if (IsDataValid(dataReceived))
-						{
-							isDataValid = true;
-						}
-					}
-				}
-			}
+			CommunicationWithDHT();
+			break;
+		}
+		default:
+		{
 			communicationState = DHT11_SET_HIGH_STATE_FOR_WAITING;
 			break;
 		}
