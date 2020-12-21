@@ -10,6 +10,7 @@
 #include "temperatureService.h"
 #include "pinsFiltering.h"
 #include "dht11.h"
+#include "photoresistor.h"
 
 #ifndef GLOBALOBJECTS_H_
 #define GLOBALOBJECTS_H_
@@ -22,6 +23,7 @@ extern "C"
 	extern ADCAveragingService adcService;
 	extern TemperatureService temperatureService;
 	extern PinsFiltering pinsFiltering;
+	extern PhotoresistorResistance photresistor;
 
 	extern ADC_HandleTypeDef hadc1;
 	extern I2C_HandleTypeDef hi2c1;

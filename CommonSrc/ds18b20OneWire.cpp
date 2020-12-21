@@ -62,7 +62,8 @@ void DS18B20_Init(void (*Set_Pin_Input)(uint8_t pinNumber),
 		void (*Delays_us)(uint16_t delay),
 		void (*Write_Pin)(uint8_t pinNumber, uint8_t pinState),
 		uint8_t (*Read_Pin)(uint8_t pinNumber),
-		uint32_t (*Get_Sys_Time)(void)
+		uint32_t (*Get_Sys_Time)(void),
+		uint8_t pinNumber
 		)
 {
 	DS18B20Service.Set_Pin_Input = Set_Pin_Input;
@@ -70,7 +71,7 @@ void DS18B20_Init(void (*Set_Pin_Input)(uint8_t pinNumber),
 	DS18B20Service.Delays_us = Delays_us;
 	DS18B20Service.Write_Pin = Write_Pin;
 	DS18B20Service.Read_Pin = Read_Pin;
-	DS18B20Service.pinNumber = 0;//todo
+	DS18B20Service.pinNumber = pinNumber;
 	DS18B20Service.Get_Sys_Time = Get_Sys_Time;
 	DS18B20Service.currentTemperature = NAN;
 

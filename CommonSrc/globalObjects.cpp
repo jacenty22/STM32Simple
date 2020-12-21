@@ -7,7 +7,6 @@
 
 #include <lm35Sensor.h>
 #include "globalObjects.h"
-#include "adcService.h"
 #include "internalSensorTemperature.h"
 #include "globalDefines.h"
 #include "temperatureService.h"
@@ -16,10 +15,12 @@
 #include "timer.h"
 #include "dht11.h"
 #include "halFunctions.h"
+#include "photoresistor.h"
 
 ADCAveragingService adcService(ADC_RESOLUTION, COUNT_OF_ADC_CHANNELS, COUNT_OF_SAMPLES_PER_CHANNEL);
 TemperatureService temperatureService(&adcService);
 PinsFiltering pinsFiltering(Read_Pin, Get_Sys_Time);
+PhotoresistorResistance photresistor(HIGHER_SUPPLY_VOLTAGE,SUPPLY_VOLTAGE,DIVIDER_RESISTOR_RESISTANCE,DARK_THRESHOLD_PHOTO_CELL);
 DHT11_Service dht11(Read_Pin,
 		Delays_us,
 		Set_Pin_Output,

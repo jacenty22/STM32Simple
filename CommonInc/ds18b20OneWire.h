@@ -30,7 +30,7 @@ typedef struct
 extern D18B20_struct DS18B20Service;
 
 void DS18B20_Init(void (*Set_Pin_Input)(uint8_t pinNumber), void (*Set_Pin_Output)(uint8_t pinNumber), void (*Delays_us)(uint16_t delay),
-		void (*Write_Pin)(uint8_t pinNumber, uint8_t pinState), uint8_t (*Read_Pin)(uint8_t pinNumber), uint32_t (*Get_Sys_Time)(void));
+		void (*Write_Pin)(uint8_t pinNumber, uint8_t pinState), uint8_t (*Read_Pin)(uint8_t pinNumber), uint32_t (*Get_Sys_Time)(void),uint8_t pinNumber);
 uint8_t Get_Temperature(float *temperature);
 void DS18B20_Service(void);
 

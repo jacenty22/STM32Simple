@@ -101,11 +101,12 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
   
     __HAL_RCC_GPIOC_CLK_ENABLE();
     /**ADC1 GPIO Configuration    
-    PC4     ------> ADC1_IN14 
+    PC4     ------> ADC1_IN14
+    PC5     ------> ADC1_IN15 
     */
-    GPIO_InitStruct.Pin = LM35_IN_Pin;
+    GPIO_InitStruct.Pin = LM35_IN_Pin|PHOTORESISTOR_IN_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    HAL_GPIO_Init(LM35_IN_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /* ADC1 DMA Init */
     /* ADC1 Init */
@@ -148,9 +149,10 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     __HAL_RCC_ADC1_CLK_DISABLE();
   
     /**ADC1 GPIO Configuration    
-    PC4     ------> ADC1_IN14 
+    PC4     ------> ADC1_IN14
+    PC5     ------> ADC1_IN15 
     */
-    HAL_GPIO_DeInit(LM35_IN_GPIO_Port, LM35_IN_Pin);
+    HAL_GPIO_DeInit(GPIOC, LM35_IN_Pin|PHOTORESISTOR_IN_Pin);
 
     /* ADC1 DMA DeInit */
     HAL_DMA_DeInit(hadc->DMA_Handle);

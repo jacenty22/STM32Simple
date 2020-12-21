@@ -11,7 +11,6 @@
  extern "C" {
 #endif
 
-void Initialize(void);
 void Main_Loop(void);
 
 #ifdef __cplusplus

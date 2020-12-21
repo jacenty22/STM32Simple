@@ -58,6 +58,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LM35_IN_Pin GPIO_PIN_4
 #define LM35_IN_GPIO_Port GPIOC
+#define PHOTORESISTOR_IN_Pin GPIO_PIN_5
+#define PHOTORESISTOR_IN_GPIO_Port GPIOC
 #define THIRD_BUTTON_Pin GPIO_PIN_7
 #define THIRD_BUTTON_GPIO_Port GPIOC
 #define FIRST_BUTTON_Pin GPIO_PIN_8

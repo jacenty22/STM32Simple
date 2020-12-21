@@ -21,17 +21,6 @@
 
 using namespace std;
 
-void Initialize(void)
-{
-	Hardware_Init();
-	Initialize_Pins_Configuration();
-	Initialize_Global_Objects();
-	LCD_I2C_Init(Transmit_For_LCD, Delay_In_Milis, I2C_Reinit_For_LCD);
-	LCD_Set_Shifting_Time(2000);
-	DS18B20_Init(Set_Pin_Input, Set_Pin_Output, Delays_us, Write_Pin, Read_Pin, Get_Sys_Time);
-	LCD_Clear();
-}
-
 void Functions_Called_Once_Every_Second()
 {
 	static uint32_t previousSecond = 0;
@@ -40,6 +29,7 @@ void Functions_Called_Once_Every_Second()
 	{
 		previousSecond = Get_Sys_Seconds();
 		temperatureService.Update_Temperatures();
+		photresistor.Calculate_Resistance_For_Voltage_Percentage(adcService.Get_Percentage_Of_Supply_Voltage_For_Channel(PHOTRESISTOR_SENSOR_INPUT));
 	}
 }
 
